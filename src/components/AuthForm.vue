@@ -3,27 +3,33 @@
 import {ref} from "vue";
 import axios, {type AxiosResponse} from "axios";
 import type {TokenResponse} from "@/types/responses";
-import type {NotifyFunction} from "@/types/functions";
 import {inject} from "vue";
+import {useUserStore} from "@/store/user";
+import type {NotifyFunction} from "@/types/objects";
 
 const notify = inject('notify') as NotifyFunction;
 
-const email = ref<string>(null)
-const password = ref<string>(null)
+const email = ref<string>(null);
+const password = ref<string>(null);
+
+const user = useUserStore();
 
 async function auth() {
   try {
     const response: AxiosResponse<TokenResponse> = await axios.post(import.meta.env.VITE_API_URL + '/auth/login', {
       'email': email.value,
       'password': password.value,
-    }).then().catch(({response}) => {
-      notify(response.data.message, { color: 'error', timeout: 300000 })
-
+    }).then((response) => {
+      localStorage.setItem('authToken', response.data.token)
+      user.isAuthorized = true;
+      }
+    ).catch(({response}) => {
+      notify(response.data.message, 'error', 3000);
     })
   } catch (error) {
     console.log(error)
   }
-}
+};
 </script>
 
 <template>
@@ -37,6 +43,7 @@ async function auth() {
       />
       <v-text-field
         v-model="password"
+        type="password"
         variant="outlined"
         label="Пароль"
       />

@@ -1,45 +1,33 @@
 <script setup lang="ts">
-import {provide, reactive} from "vue";
+import {inject, watch} from "vue";
+import type {Notify} from "@/types/objects";
 
-interface Notify {
-  visible: boolean,
-  timeout: number,
-  color: string,
-  message: string,
-}
+const notifications = inject('notifications') as Notify[];
 
-const notification = reactive<Notify>({
-  visible: false,
-  timeout: 3000,
-  color: 'info',
-  message: '',
-});
-
-const notify = (message: string, options: { color?: string, timeout?: number } = {}) => {
-  notification.message = message;
-  notification.color = options.color || 'info';
-  notification.timeout = options.timeout || 3000;
-  notification.visible = true;
+const removeNotification = (id: string) => {
+  const index = notifications.findIndex(notification => notification.id === id);
+  if (index !== -1) {
+    notifications.splice(index, 1);
+  }
 };
-
-provide('notify', notify);
 </script>
-
 
 <template>
   <v-snackbar
+    v-for="(notification, index) in notifications.filter(item => item.visible)"
+    :key="notification.id"
     v-model="notification.visible"
     :timeout="notification.timeout"
     :color="notification.color"
-    top
+    :style="`bottom: ${index * 60}px`"
+    @update:model-value="removeNotification(notification.id)"
   >
     {{ notification.message }}
     <template #actions>
       <v-btn
-        @click="notification.visible = false"
-      >
-        Закрыть
-      </v-btn>
+        icon="mdi-close-thick"
+        @click="removeNotification(notification.id)"
+      />
     </template>
   </v-snackbar>
   <slot />

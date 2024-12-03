@@ -1,23 +1,43 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import {inject, ref, watch} from 'vue'
 import AuthForm from './AuthForm.vue';
 import RegisterForm from './RegisterForm.vue';
 import {useUserStore} from "@/store/user";
+import {useRouter} from "vue-router";
+import axios, {type AxiosResponse} from "axios";
+import type {TokenResponse} from "@/types/responses";
+import type {NotifyFunction} from "@/types/objects";
 
-const menu = ref(false)
-const register = ref(false)
+const menu = ref(false);
+const register = ref(false);
 watch(menu, (newValue) => {
   if(!newValue) {
     register.value = false
   }
-})
+});
 
 const switchForm = () => {
   register.value = !register.value
 };
 
-const user = useUserStore()
+const notify = inject('notify') as NotifyFunction;
+const user = useUserStore();
+const router = useRouter();
 
+async function logout() {
+  try {
+    const response: AxiosResponse<TokenResponse> = await axios.get(import.meta.env.VITE_API_URL + '/auth/logout')
+      .then(() => {
+        localStorage.removeItem('authToken')
+        user.isAuthorized = false;
+      }
+    ).catch(({response}) => {
+      notify(response.data.message, 'error', 3000);
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <template>
@@ -87,6 +107,7 @@ const user = useUserStore()
           <v-btn
             variant="text"
             prepend-icon="mdi-account"
+            @click="router.push('/profile')"
           >
             Мои ссылки
           </v-btn>
@@ -95,6 +116,7 @@ const user = useUserStore()
           <v-btn
             variant="text"
             prepend-icon="mdi-logout"
+            @click="logout"
           >
             Выйти
           </v-btn>
