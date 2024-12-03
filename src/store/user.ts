@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 import {ref} from "vue";
 
-export const userStore = defineStore('user', () => {
-  const id = ref(0)
-  const name = ref(null)
-  const email = ref(null)
-  const roles = ref(null)
-  const isAuthorized = ref(false)
+export const useUserStore = defineStore('user', () => {
+  const id = ref<number>(-1)
+  const name = ref<string|null>(null)
+  const email = ref<string|null>(null)
+  const roles = ref<object>([])
+  const isAuthorized = ref<boolean>(false)
 
   return {
     id,

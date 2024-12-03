@@ -7,9 +7,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminTab: typeof import('./src/components/ProfileTabs/AdminTab.vue')['default']
     AuthForm: typeof import('./src/components/AuthForm.vue')['default']
+    GroupsTab: typeof import('./src/components/ProfileTabs/GroupsTab.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
+    LinksTab: typeof import('./src/components/ProfileTabs/LinksTab.vue')['default']
     Main: typeof import('./src/components/Main.vue')['default']
+    Notification: typeof import('./src/components/Notification.vue')['default']
+    Profile: typeof import('./src/components/Profile.vue')['default']
     RegisterForm: typeof import('./src/components/RegisterForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

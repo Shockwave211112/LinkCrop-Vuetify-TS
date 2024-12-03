@@ -1,13 +1,13 @@
 <template>
-  <body class="d-flex flex-column h-screen bg-primary">
+  <body class="d-flex flex-column h-screen">
     <Header />
-    <Main />
+    <Profile />
   </body>
 </template>
 
 <script lang="ts" setup>
 import Header from "@/components/Header.vue";
-import Main from "@/components/Main.vue";
+import Profile from "@/components/Profile.vue";
 
 </script>
 

@@ -2,6 +2,7 @@
 import {ref, watch} from 'vue'
 import AuthForm from './AuthForm.vue';
 import RegisterForm from './RegisterForm.vue';
+import {useUserStore} from "@/store/user";
 
 const menu = ref(false)
 const register = ref(false)
@@ -15,16 +16,20 @@ const switchForm = () => {
   register.value = !register.value
 };
 
+const user = useUserStore()
+
 </script>
 
 <template>
   <header class="position-sticky bg-primary top-0 d-flex align-center justify-space-between pa-5">
-    <a
-      href="#"
+    <router-link
+      to="/"
       class="text-decoration-none"
-    >LinkCrop</a>
+    >
+      LinkCrop
+    </router-link>
     <v-menu
-      v-if="true"
+      v-if="!user.isAuthorized"
       v-model="menu"
       min-width="300"
       offset="8"

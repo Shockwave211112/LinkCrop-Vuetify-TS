@@ -3,14 +3,38 @@
 </script>
 
 <template>
-  <main class="h-100 bg-primary">
-    <div class="content h-100 w-75 ma-auto bg-secondary" />
+  <main
+    class="h-100
+      w-75
+      ma-auto
+      bg-secondary
+      d-flex
+      flex-column
+      justify-space-around
+      text-center"
+  >
+    <div class="post">
+      <p>Типо главная страница, хз че тут писать</p>
+    </div>
+    <v-divider />
+    <div class="post">
+      <p>Наверное тут должны быть новости...</p>
+    </div>
+    <v-divider />
+    <div class="post">
+      <p>А может какие-нибудь зазывалки.</p>
+    </div>
+    <v-divider />
+    <div class="post">
+      <p>Типо в духе "О это лучший сайт для сокрытия ссылок и сборка статистики переходов по ним".</p>
+    </div>
+    <v-divider />
+    <div class="post">
+      <p>Но я сомневаюсь что эта зазывалка подходит...</p>
+    </div>
   </main>
 </template>
 
 <style scoped>
-main {
-  //background: linear-gradient(145deg, rgba(0,0,0,1) 0%, rgba(0,9,22,1) 35%, rgba(0,14,36,1) 70%, rgba(0,23,56,1) 100%);
-}
 
 </style>
