@@ -13,23 +13,26 @@ const removeNotification = (id: string) => {
 </script>
 
 <template>
-  <v-snackbar
+  <div
     v-for="(notification, index) in notifications.filter(item => item.visible)"
     :key="notification.id"
-    v-model="notification.visible"
-    :timeout="notification.timeout"
-    :color="notification.color"
-    :style="`bottom: ${index * 60}px`"
-    @update:model-value="removeNotification(notification.id)"
   >
-    {{ notification.message }}
-    <template #actions>
-      <v-btn
-        icon="mdi-close-thick"
-        @click="removeNotification(notification.id)"
-      />
-    </template>
-  </v-snackbar>
+    <v-snackbar
+      v-model="notification.visible"
+      :timeout="notification.timeout"
+      :color="notification.color"
+      :style="`bottom: ${index * 60}px`"
+      @update:model-value="removeNotification(notification.id)"
+    >
+      {{ notification.message }}
+      <template #actions>
+        <v-btn
+          icon="mdi-close-thick"
+          @click="removeNotification(notification.id)"
+        />
+      </template>
+    </v-snackbar>
+  </div>
   <slot />
 </template>
 

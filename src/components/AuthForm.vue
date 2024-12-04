@@ -1,22 +1,34 @@
 <script setup lang="ts">
-
 import {ref} from "vue";
 import {inject} from "vue";
 import {useUserStore} from "@/store/user";
 import {apiClient} from "@/plugins/axios";
+import { useVuelidate } from '@vuelidate/core'
+import { required, email } from '@vuelidate/validators'
 
 import type {NotifyFunction} from "@/types/objects";
 const notify = inject('notify') as NotifyFunction;
 
-const email = ref<string>(null);
+const userEmail = ref<string>(null);
 const password = ref<string>(null);
 
 const user = useUserStore();
 
+const rules = {
+  userEmail: { required, email },
+  password: { required },
+};
+const v$ = useVuelidate(rules, {userEmail, password});
+
 async function auth(): Promise<void> {
+  v$.value.$validate();
+  if (v$.value.$invalid) {
+    notify("Проверьте данные в полях!", 'warning', 3000);
+    return
+  }
   try {
     await apiClient.post('/auth/login', {
-      'email': email.value,
+      'email': userEmail.value,
       'password': password.value,
     }).then((response) => {
       localStorage.setItem('authToken', response.data.token)
@@ -27,7 +39,7 @@ async function auth(): Promise<void> {
       notify(response.data.message, 'error', 3000);
     })
   } catch (error) {
-    console.log(error)
+    notify("Неправильные данные!", 'error', 3000);
   }
 };
 </script>
@@ -37,15 +49,20 @@ async function auth(): Promise<void> {
     <v-card-title>Авторизация</v-card-title>
     <v-card-text>
       <v-text-field
-        v-model="email"
+        v-model="userEmail"
         variant="outlined"
         label="Email"
+        :error="v$.userEmail.$error"
+        :error-messages="v$.userEmail.$errors[0]?.$message.toString()"
       />
       <v-text-field
         v-model="password"
         type="password"
         variant="outlined"
         label="Пароль"
+        class="pt-2"
+        :error="v$.password.$error"
+        :error-messages="v$.password.$errors[0]?.$message.toString()"
       />
     </v-card-text>
     <v-card-actions>

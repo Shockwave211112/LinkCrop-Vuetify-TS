@@ -53,11 +53,6 @@ async function logout() {
     >
       LinkCrop
     </router-link>
-    <v-btn
-      @click="console.log($vuetify)"
-    >
-      tttt
-    </v-btn>
     <v-menu
       v-if="!user.userData"
       v-model="menu"
