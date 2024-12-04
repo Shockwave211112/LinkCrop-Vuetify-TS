@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {inject, ref, watch} from 'vue'
-import AuthForm from './AuthForm.vue';
-import RegisterForm from './RegisterForm.vue';
 import {useUserStore} from "@/store/user";
 import {useRouter} from "vue-router";
-import axios, {type AxiosResponse} from "axios";
-import type {TokenResponse} from "@/types/responses";
+import {apiClient} from "@/plugins/axios";
+
 import type {NotifyFunction} from "@/types/objects";
+
+import AuthForm from './AuthForm.vue';
+import RegisterForm from './RegisterForm.vue';
+
 
 const menu = ref(false);
 const register = ref(false);
@@ -26,10 +28,13 @@ const router = useRouter();
 
 async function logout() {
   try {
-    const response: AxiosResponse<TokenResponse> = await axios.get(import.meta.env.VITE_API_URL + '/auth/logout')
+    apiClient.get('/auth/logout')
       .then(() => {
         localStorage.removeItem('authToken')
-        user.isAuthorized = false;
+        user.logout();
+        notify('Вы вышли из системы', 'success', 3000);
+        menu.value = false;
+        router.push('/');
       }
     ).catch(({response}) => {
       notify(response.data.message, 'error', 3000);
@@ -48,8 +53,13 @@ async function logout() {
     >
       LinkCrop
     </router-link>
+    <v-btn
+      @click="console.log($vuetify)"
+    >
+      tttt
+    </v-btn>
     <v-menu
-      v-if="!user.isAuthorized"
+      v-if="!user.userData"
       v-model="menu"
       min-width="300"
       offset="8"
@@ -99,7 +109,7 @@ async function logout() {
           <v-icon class="pa-6">
             mdi-account-circle-outline
           </v-icon>
-          <span>Юзернейм</span>
+          <span>{{ user.userData.name }}</span>
         </div>
       </template>
       <v-card>
@@ -142,7 +152,7 @@ a {
 
 .user:hover {
   cursor: pointer;
-  color: red;
+  color: var(--v-theme-selected);
   transition: color 0.2s;
 }
 

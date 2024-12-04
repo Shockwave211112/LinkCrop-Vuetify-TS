@@ -1,18 +1,34 @@
 import { defineStore } from 'pinia'
 import {ref} from "vue";
+import {apiClient} from "@/plugins/axios";
+import type {User} from "@/types/objects";
 
 export const useUserStore = defineStore('user', () => {
-  const id = ref<number>(-1)
-  const name = ref<string|null>(null)
-  const email = ref<string|null>(null)
-  const roles = ref<object>([])
-  const isAuthorized = ref<boolean>(false)
+  const userData = ref<User|null>(
+    localStorage.getItem('user')
+    ? JSON.parse(localStorage.getItem('user'))
+    : null);
+
+  function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    userData.value = null;
+  }
+
+  async function login() {
+    await apiClient.get('/user/info')
+      .then(({data}) => {
+        const userObject = data.entity;
+        userObject.roles = data.roles;
+
+        localStorage.setItem('user', JSON.stringify(userObject));
+        userData.value = userObject;
+      });
+  }
 
   return {
-    id,
-    name,
-    email,
-    roles,
-    isAuthorized,
+    userData,
+    logout,
+    login,
   }
 })

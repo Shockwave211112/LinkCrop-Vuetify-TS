@@ -1,12 +1,11 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
-import axios, {type AxiosResponse} from "axios";
-import type {TokenResponse} from "@/types/responses";
 import {inject} from "vue";
 import {useUserStore} from "@/store/user";
-import type {NotifyFunction} from "@/types/objects";
+import {apiClient} from "@/plugins/axios";
 
+import type {NotifyFunction} from "@/types/objects";
 const notify = inject('notify') as NotifyFunction;
 
 const email = ref<string>(null);
@@ -14,14 +13,15 @@ const password = ref<string>(null);
 
 const user = useUserStore();
 
-async function auth() {
+async function auth(): Promise<void> {
   try {
-    const response: AxiosResponse<TokenResponse> = await axios.post(import.meta.env.VITE_API_URL + '/auth/login', {
+    await apiClient.post('/auth/login', {
       'email': email.value,
       'password': password.value,
     }).then((response) => {
       localStorage.setItem('authToken', response.data.token)
-      user.isAuthorized = true;
+      user.login();
+      notify("Авторизация успешна!", 'success', 3000);
       }
     ).catch(({response}) => {
       notify(response.data.message, 'error', 3000);
