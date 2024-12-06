@@ -18,3 +18,13 @@ export interface User {
   name: string,
   roles: object[],
 }
+
+export interface Link {
+  id: number,
+  name: string,
+  description: string,
+  origin: string,
+  referral: string,
+  updated_at: string,
+  created_at: string,
+}

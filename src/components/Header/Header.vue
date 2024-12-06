@@ -6,8 +6,8 @@ import {apiClient} from "@/plugins/axios";
 
 import type {NotifyFunction} from "@/types/objects";
 
-import AuthForm from './AuthForm.vue';
-import RegisterForm from './RegisterForm.vue';
+import AuthForm from './Auth/AuthForm.vue';
+import RegisterForm from './Auth/RegisterForm.vue';
 
 
 const menu = ref(false);

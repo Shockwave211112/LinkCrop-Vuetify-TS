@@ -21,7 +21,7 @@ const rules = {
 const v$ = useVuelidate(rules, {userEmail, password});
 
 async function auth(): Promise<void> {
-  v$.value.$validate();
+  await v$.value.$validate();
   if (v$.value.$invalid) {
     notify("Проверьте данные в полях!", 'warning', 3000);
     return
@@ -47,37 +47,39 @@ async function auth(): Promise<void> {
 <template>
   <div>
     <v-card-title>Авторизация</v-card-title>
-    <v-card-text>
-      <v-text-field
-        v-model="userEmail"
-        variant="outlined"
-        label="Email"
-        :error="v$.userEmail.$error"
-        :error-messages="v$.userEmail.$errors[0]?.$message.toString()"
-      />
-      <v-text-field
-        v-model="password"
-        type="password"
-        variant="outlined"
-        label="Пароль"
-        class="pt-2"
-        :error="v$.password.$error"
-        :error-messages="v$.password.$errors[0]?.$message.toString()"
-      />
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        text="Войти"
-        variant="text"
-        @click="auth"
-      />
-      <v-btn
-        text="Регистрация"
-        variant="text"
-        @click="$emit('switch')"
-      />
-    </v-card-actions>
+    <v-form>
+      <v-card-text>
+        <v-text-field
+          v-model="userEmail"
+          variant="outlined"
+          label="Email"
+          :error="v$.userEmail.$error"
+          :class="v$.userEmail.$error ? 'pb-2' : ''"
+          :error-messages="v$.userEmail.$errors[0]?.$message.toString()"
+        />
+        <v-text-field
+          v-model="password"
+          type="password"
+          variant="outlined"
+          label="Пароль"
+          :error="v$.password.$error"
+          :error-messages="v$.password.$errors[0]?.$message.toString()"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          text="Войти"
+          variant="text"
+          @click="auth"
+        />
+        <v-btn
+          text="Регистрация"
+          variant="text"
+          @click="$emit('switch')"
+        />
+      </v-card-actions>
+    </v-form>
   </div>
 </template>
 

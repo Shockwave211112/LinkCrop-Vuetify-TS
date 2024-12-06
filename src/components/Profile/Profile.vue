@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import LinksTab from "@/components/ProfileTabs/LinksTab.vue";
-import GroupsTab from "@/components/ProfileTabs/GroupsTab.vue";
-import AdminTab from "@/components/ProfileTabs/AdminTab.vue";
+import LinksTab from "@/components/Profile/ProfileTabs/LinksTab.vue";
+import GroupsTab from "@/components/Profile/ProfileTabs/GroupsTab.vue";
+import AdminTab from "@/components/Profile/ProfileTabs/AdminTab.vue";
 
 const tab = ref('links')
 </script>
 
 <template>
-  <main class="h-100 d-flex bg-blue-grey-darken-4">
+  <main class="h-100 d-flex bg-secondary">
     <v-tabs
       v-model="tab"
       direction="vertical"

@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts" setup>
-import Header from "@/components/Header.vue";
-import Profile from "@/components/Profile.vue";
+import Header from "@/components/Header/Header.vue";
+import Profile from "@/components/Profile/Profile.vue";
 
 </script>
 

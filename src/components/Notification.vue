@@ -24,10 +24,21 @@ const removeNotification = (id: string) => {
       :style="`bottom: ${index * 60}px`"
       @update:model-value="removeNotification(notification.id)"
     >
-      {{ notification.message }}
+      <span
+        :class="'text-'
+          + (notification.color == 'warning'
+            ? 'black'
+            : 'white')"
+      >
+        {{ notification.message }}
+      </span>
       <template #actions>
         <v-btn
           icon="mdi-close-thick"
+          :class="'text-'
+            + (notification.color == 'warning'
+              ? 'black'
+              : 'white')"
           @click="removeNotification(notification.id)"
         />
       </template>
