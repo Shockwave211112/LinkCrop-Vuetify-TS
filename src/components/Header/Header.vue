@@ -101,10 +101,13 @@ async function logout() {
           v-bind="props"
           @click="menu=true"
         >
-          <v-icon class="pa-6">
+          <span>{{ user.userData.name }}</span>
+          <v-icon
+            class="pa-6"
+            size="small"
+          >
             mdi-account-circle-outline
           </v-icon>
-          <span>{{ user.userData.name }}</span>
         </div>
       </template>
       <v-card>
@@ -147,12 +150,12 @@ a {
 
 .user:hover {
   cursor: pointer;
-  color: var(--v-theme-selected);
+  color: red;
   transition: color 0.2s;
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .fade-enter-from, .fade-leave-to {

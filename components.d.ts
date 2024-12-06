@@ -11,6 +11,7 @@ declare module 'vue' {
     AuthForm: typeof import('./src/components/Header/Auth/AuthForm.vue')['default']
     GroupsTab: typeof import('./src/components/Profile/ProfileTabs/GroupsTab.vue')['default']
     Header: typeof import('./src/components/Header/Header.vue')['default']
+    LinkEditForm: typeof import('./src/components/Profile/LinkEditForm.vue')['default']
     LinksTab: typeof import('./src/components/Profile/ProfileTabs/LinksTab.vue')['default']
     Main: typeof import('./src/components/Main.vue')['default']
     Notification: typeof import('./src/components/Notification.vue')['default']

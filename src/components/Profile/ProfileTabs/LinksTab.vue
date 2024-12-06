@@ -1,37 +1,58 @@
 <script setup lang="ts">
 import {inject, onMounted, ref} from "vue";
-import type {Link} from "@/types/objects";
+import type {Group, Link} from "@/types/objects";
 import {apiClient} from "@/plugins/axios";
-import {formatDate} from "@/utils/formatters";
 
 import type {NotifyFunction} from "@/types/objects";
+import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
 
 const links = ref<Link[]>([]);
+const groups = ref<Group[]>([]);
 const currentPage = ref<number|null>(1);
 const totalPages = ref<number|null>(1);
 
 onMounted(() => {
   getLinks();
+  getGroups();
 });
 
 async function getLinks() {
   await apiClient.get('/links')
     .then(({data}) => {
-      console.log(data);
       links.value = data.data;
-      totalPages.value = data.total;
+      totalPages.value = data.last_page;
     })
+}
+
+async function getGroups() {
+  await apiClient.get('/groups?all=true')
+    .then(({data}) => {
+      groups.value = data.data;
+    })
+}
+
+async function save(link: Link) {
+  await apiClient.patch('/links/' + link.id, {
+    'name': link.name,
+    'description': link.description,
+    'origin': link.origin,
+    'group_id': link.groups,
+  }).then(() => {
+    notify("Успешно сохранено!", 'success');
+  }).catch(({response}) => {
+    notify(response.data.message, 'error');
+  })
 }
 
 function copyReferral(referral: string) {
   try {
     navigator.clipboard.writeText(referralUrl + referral);
-    notify("Скопировано", 'success', 3000);
-  } catch($e) {
-    notify("Произошла ошибка", 'error', 3000);
+    notify("Скопировано", 'success');
+  } catch(error) {
+    notify("Произошла ошибка", 'error');
   }
 
 }
@@ -58,22 +79,32 @@ function copyReferral(referral: string) {
                 class="align-center"
               >
                 <v-col
-                  class="d-flex justify-start"
                   cols="2"
                 >
-                  {{ link.name }}
+                  <div class="opacity-30 pb-1">
+                    Название:
+                  </div>
+                  <div>
+                    {{ link.name }}
+                  </div>
                 </v-col>
                 <v-col
-                  class="text--secondary"
                   cols="7"
                 >
-                  {{ link.description }}
+                  <div class="opacity-30 pb-1">
+                    Описание:
+                  </div>
+                  <div>
+                    {{ link.description }}
+                  </div>
                 </v-col>
                 <v-col
-                  class="text--secondary"
                   cols="2"
                 >
-                  {{ link.referral }}
+                  <div class="opacity-30 pb-1">
+                    Эндпоинт:
+                  </div>
+                  <div>{{ link.referral }}</div>
                 </v-col>
                 <v-col cols="1">
                   <v-btn
@@ -86,33 +117,29 @@ function copyReferral(referral: string) {
               </v-row>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <div class="d-flex">
-                <v-col cols="5">
-                  <v-text-field
-                    v-model="link.name"
-                    variant="outlined"
-                    label="Название"
-                  />
-                  <v-text-field
-                    :value="formatDate(link.created_at)"
-                    variant="outlined"
-                    disabled
-                    label="Дата создания"
-                  />
-                </v-col>
-                <v-col cols="7">
-                  <v-text-field
-                    v-model="link.origin"
-                    variant="outlined"
-                    label="Куда редиректим?"
-                  />
-                  <v-text-field
-                    v-model="link.description"
-                    variant="outlined"
-                    label="Описание"
-                  />
-                </v-col>
-              </div>
+              <LinkEditForm
+                :link="link"
+                :groups="groups"
+              >
+                <template #buttons>
+                  <v-btn
+                    variant="tonal"
+                    prepend-icon="mdi-trash-can-outline"
+                    class="bg-error mr-3"
+                    @click="delete(link.id)"
+                  >
+                    Удалить
+                  </v-btn>
+                  <v-btn
+                    variant="tonal"
+                    prepend-icon="mdi-content-save"
+                    class="bg-success"
+                    @click="save(link)"
+                  >
+                    Сохранить
+                  </v-btn>
+                </template>
+              </LinkEditForm>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </div>

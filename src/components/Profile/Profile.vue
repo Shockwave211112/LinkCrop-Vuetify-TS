@@ -3,8 +3,10 @@ import {ref} from "vue";
 import LinksTab from "@/components/Profile/ProfileTabs/LinksTab.vue";
 import GroupsTab from "@/components/Profile/ProfileTabs/GroupsTab.vue";
 import AdminTab from "@/components/Profile/ProfileTabs/AdminTab.vue";
+import {useUserStore} from "@/store/user";
 
-const tab = ref('links')
+const tab = ref<string>('links');
+const user = useUserStore().userData;
 </script>
 
 <template>
@@ -25,6 +27,7 @@ const tab = ref('links')
         value="groups"
       />
       <v-tab
+        v-show="user?.roles.includes('admin')"
         prepend-icon="mdi-account-group-outline"
         text="Админка"
         value="admin"

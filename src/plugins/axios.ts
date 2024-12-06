@@ -7,7 +7,7 @@ export const apiClient = axios.create({
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 });
 
 apiClient.interceptors.request.use(config => {
@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(config => {
   }
   return config;
 }, error => {
-  console.log(error);
+  return Promise.reject(error);
 });
 
 apiClient.interceptors.response.use(response => {
@@ -28,4 +28,5 @@ apiClient.interceptors.response.use(response => {
     user.logout();
     router.push('/');
   }
+  return Promise.reject(error);
 });
