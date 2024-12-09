@@ -34,9 +34,9 @@ const rules = {
 const v$ = useVuelidate(rules, { name, userEmail, password, passwordConfirmation })
 
 async function register(): Promise<void> {
-  await v$.value.$validate();
-  if (v$.value.$invalid) {
-    notify("Проверьте данные в полях!", 'warning', 3000);
+  const isValid = await v$.value.$validate();
+  if (!isValid) {
+    notify("Проверьте данные в полях!", 'warning');
     return
   }
   try {
@@ -48,13 +48,13 @@ async function register(): Promise<void> {
     }).then((response) => {
         localStorage.setItem('authToken', response.data.token)
         user.login();
-        notify("Регистрация успешна!", 'success', 3000);
+        notify("Регистрация успешна!", 'success');
       }
     ).catch(({response}) => {
-      notify(response.data.message, 'error', 3000);
+      notify(response.data.message, 'error');
     })
   } catch (error) {
-    notify("Неправильные данные!", 'error', 3000);
+    notify("Неправильные данные!", 'error');
   }
 };
 

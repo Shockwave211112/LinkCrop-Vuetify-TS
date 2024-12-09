@@ -1,13 +1,48 @@
 <script setup lang="ts">
 import type {Group, Link} from "@/types/objects";
-import {ref} from "vue";
+import {inject, reactive} from "vue";
+import {required} from "@vuelidate/validators";
+import {useVuelidate} from "@vuelidate/core";
+
+import type {NotifyFunction} from "@/types/objects";
+const notify = inject('notify') as NotifyFunction;
 
 const props =  defineProps({
-  link: ref<Link|null>(null),
-  groups: ref<Group|null>(null),
+  link: reactive<Link>({
+    id: -999,
+    name: 'Placeholder',
+    description: 'Placeholder',
+    referral: 'Placeholder',
+    origin: 'Placeholder',
+    created_at: Date(),
+    updated_at: Date(),
+    groups: [],
+  }),
+  groups: reactive<Group[]>([{
+    id: -999,
+    name: 'Placeholder',
+    description: 'Placeholder',
+  }]),
 })
 
+const rules = {
+  props: {
+    link: {
+      name: { required },
+      description: { required },
+      origin: { required },
+    }
+  },
+};
+const v$ = useVuelidate(rules, {props});
 
+async function validateLinkForm() {
+  const isValid = await v$.value.$validate();
+  if (!isValid) {
+    notify("Проверьте данные в полях!", 'warning');
+  }
+  return isValid;
+}
 </script>
 
 <template>
@@ -20,6 +55,9 @@ const props =  defineProps({
         v-model="props.link.name"
         variant="outlined"
         label="Название"
+        :error="v$.props.link.name.$error"
+        :class="v$.props.link.name.$error ? 'pb-2' : ''"
+        :error-messages="v$.props.link.name.$errors[0]?.$message.toString()"
       />
       <v-select
         v-model="props.link.groups"
@@ -46,16 +84,25 @@ const props =  defineProps({
         v-model="props.link.origin"
         variant="outlined"
         label="Куда редиректим?"
+        :error="v$.props.link.origin.$error"
+        :class="v$.props.link.origin.$error ? 'pb-2' : ''"
+        :error-messages="v$.props.link.origin.$errors[0]?.$message.toString()"
       />
       <v-text-field
         v-model="props.link.description"
         variant="outlined"
         label="Описание"
+        :error="v$.props.link.description.$error"
+        :class="v$.props.link.description.$error ? 'pb-2' : ''"
+        :error-messages="v$.props.link.description.$errors[0]?.$message.toString()"
       />
-      <v-spacer class="h-100" />
-      <v-row class=" justify-end ma-1">
-        <slot name="buttons" />
+      <v-row class=" justify-end ma-1 mt-2">
+        <slot
+          name="buttons"
+          :validate="validateLinkForm"
+        />
       </v-row>
+      <v-spacer class="h-100" />
     </v-col>
   </v-form>
 </template>

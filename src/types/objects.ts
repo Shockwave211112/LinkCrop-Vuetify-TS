@@ -27,7 +27,7 @@ export interface Link {
   referral: string,
   updated_at: string,
   created_at: string,
-  groups: Group[],
+  groups: number[],
 }
 
 export interface Group {

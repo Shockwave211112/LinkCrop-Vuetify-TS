@@ -2,12 +2,24 @@
 import {inject, onMounted, ref} from "vue";
 import type {Group, Link} from "@/types/objects";
 import {apiClient} from "@/plugins/axios";
+import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
 
 import type {NotifyFunction} from "@/types/objects";
-import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
+const createDialog = ref<boolean>(false);
+const deleteDialog = ref<boolean>(false);
+const tempCreationLink = ref<Link>({
+    id: 0,
+    name: '',
+    description: '',
+    origin: '',
+    referral: '',
+    updated_at: Date(),
+    created_at: Date(),
+    groups: [],
+});
 
 const links = ref<Link[]>([]);
 const groups = ref<Group[]>([]);
@@ -15,11 +27,11 @@ const currentPage = ref<number|null>(1);
 const totalPages = ref<number|null>(1);
 
 onMounted(() => {
-  getLinks();
-  getGroups();
+  fetchLinks();
+  fetchGroups();
 });
 
-async function getLinks() {
+async function fetchLinks() {
   await apiClient.get('/links')
     .then(({data}) => {
       links.value = data.data;
@@ -27,23 +39,37 @@ async function getLinks() {
     })
 }
 
-async function getGroups() {
+async function fetchGroups() {
   await apiClient.get('/groups?all=true')
     .then(({data}) => {
       groups.value = data.data;
     })
 }
 
-async function save(link: Link) {
-  await apiClient.patch('/links/' + link.id, {
-    'name': link.name,
-    'description': link.description,
-    'origin': link.origin,
-    'group_id': link.groups,
-  }).then(() => {
-    notify("Успешно сохранено!", 'success');
+async function save(validate, link: Link) {
+  const isValid = await validate();
+  if (isValid) {
+    await apiClient.patch('/links/' + link.id, {
+      'name': link.name,
+      'description': link.description,
+      'origin': link.origin,
+      'group_id': link.groups,
+    }).then(() => {
+      notify("Успешно сохранено!", 'success');
+    }).catch(({response}) => {
+      notify(response.data.message, 'error');
+    })
+  }
+}
+
+async function deleteLink(id: number) {
+  await apiClient.delete('/links/' + id).then(() => {
+    notify("Успешно удалено!", 'success');
+    links.value.splice(links.value.findIndex(item => item.id == id), 1);
   }).catch(({response}) => {
     notify(response.data.message, 'error');
+  }).finally(() => {
+    deleteDialog.value = false;
   })
 }
 
@@ -54,14 +80,58 @@ function copyReferral(referral: string) {
   } catch(error) {
     notify("Произошла ошибка", 'error');
   }
+}
 
+function clearTempLink() {
+  tempCreationLink.value = {
+    id: 0,
+    name: '',
+    description: '',
+    origin: '',
+    referral: '',
+    updated_at: Date(),
+    created_at: Date(),
+    groups: [],
+  }
+}
+
+async function create(validate, link: Link) {
+  const isValid = await validate();
+  if (isValid) {
+    const data = {
+      'name': link.name,
+      'description': link.description,
+      'origin': link.origin,
+      'group_id': link.groups,
+    }
+    if(!link.groups.length) {
+      delete data.group_id;
+    }
+
+    await apiClient.post('/links', data).then(() => {
+      notify("Создание успешно!", 'success');
+      createDialog.value = false;
+      clearTempLink();
+      fetchLinks();
+    }).catch(({response}) => {
+      notify(response.data.message, 'error');
+    })
+  }
 }
 </script>
 
 <template>
   <v-card class="bg-secondary">
-    <v-card-title>
-      Список твоих ссылок
+    <v-card-title class="pa-4 d-flex align-center">
+      <div class="title">
+        <span>Список ссылок</span>
+        <v-btn
+          icon="mdi-plus"
+          size="small"
+          class="bg-accent ml-4"
+          @click="createDialog = true"
+        />
+      </div>
     </v-card-title>
     <v-card-text>
       <v-expansion-panels class="mb-4">
@@ -121,27 +191,50 @@ function copyReferral(referral: string) {
                 :link="link"
                 :groups="groups"
               >
-                <template #buttons>
+                <template #buttons="{ validate }">
                   <v-btn
-                    variant="tonal"
-                    prepend-icon="mdi-trash-can-outline"
+                    icon="mdi-chart-line-variant"
+                    class="bg-accent mr-3"
+                    @click=""
+                  />
+                  <v-btn
+                    icon="mdi-trash-can-outline"
                     class="bg-error mr-3"
-                    @click="delete(link.id)"
-                  >
-                    Удалить
-                  </v-btn>
+                    @click="deleteDialog = true"
+                  />
                   <v-btn
-                    variant="tonal"
-                    prepend-icon="mdi-content-save"
+                    icon="mdi-content-save"
                     class="bg-success"
-                    @click="save(link)"
-                  >
-                    Сохранить
-                  </v-btn>
+                    @click="save(validate, link)"
+                  />
                 </template>
               </LinkEditForm>
             </v-expansion-panel-text>
           </v-expansion-panel>
+          <v-dialog
+            v-model="deleteDialog"
+            max-width="400"
+            scrim="black"
+          >
+            <v-card>
+              <v-card-title>Уверены?</v-card-title>
+              <v-card-text>Вы точно хотите удалить ссылку?</v-card-text>
+              <v-card-actions>
+                <v-btn
+                  variant="text"
+                  @click="deleteLink(link.id)"
+                >
+                  Да
+                </v-btn>
+                <v-btn
+                  variant="text"
+                  @click="deleteDialog = false"
+                >
+                  Нет
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </div>
       </v-expansion-panels>
       <v-pagination
@@ -150,6 +243,35 @@ function copyReferral(referral: string) {
         rounded="circle"
       />
     </v-card-text>
+    <v-dialog
+      v-model="createDialog"
+      max-width="1000px"
+      scrim="black"
+    >
+      <v-card>
+        <v-card-title>Создание новой ссылки</v-card-title>
+        <v-card-text>
+          <LinkEditForm
+            :link="tempCreationLink"
+            :groups="groups"
+          >
+            <template #buttons="{ validate }">
+              <v-btn
+                icon="mdi-restore"
+                class="bg-primary mr-3"
+                @click="clearTempLink"
+              />
+              <v-btn
+                icon="mdi-content-save"
+                class="bg-success"
+
+                @click="create(validate, tempCreationLink)"
+              />
+            </template>
+          </LinkEditForm>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 

@@ -21,9 +21,9 @@ const rules = {
 const v$ = useVuelidate(rules, {userEmail, password});
 
 async function auth(): Promise<void> {
-  await v$.value.$validate();
-  if (v$.value.$invalid) {
-    notify("Проверьте данные в полях!", 'warning', 3000);
+  const isValid = await v$.value.$validate();
+  if (!isValid) {
+    notify("Проверьте данные в полях!", 'warning');
     return
   }
   try {
@@ -33,13 +33,13 @@ async function auth(): Promise<void> {
     }).then((response) => {
       localStorage.setItem('authToken', response.data.token)
       user.login();
-      notify("Авторизация успешна!", 'success', 3000);
+      notify("Авторизация успешна!", 'success');
       }
     ).catch(({response}) => {
-      notify(response.data.message, 'error', 3000);
+      notify(response.data.message, 'error');
     })
   } catch (error) {
-    notify("Неправильные данные!", 'error', 3000);
+    notify("Неправильные данные!", 'error');
   }
 };
 </script>
