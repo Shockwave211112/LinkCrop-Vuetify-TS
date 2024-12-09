@@ -10,7 +10,7 @@ const user = useUserStore().userData;
 </script>
 
 <template>
-  <main class="h-100 d-flex bg-secondary">
+  <main class="d-flex bg-secondary">
     <v-tabs
       v-model="tab"
       direction="vertical"
