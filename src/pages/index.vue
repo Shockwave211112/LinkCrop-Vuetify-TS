@@ -1,13 +1,15 @@
 <template>
-  <body class="d-flex flex-column h-screen bg-primary">
+  <div class="d-flex flex-column h-screen bg-primary">
     <Header />
     <Main />
-  </body>
+    <Footer />
+  </div>
 </template>
 
 <script lang="ts" setup>
 import Header from "@/components/Header/Header.vue";
 import Main from "@/components/Main.vue";
+import Profile from "@/pages/profile.vue";
 
 </script>
 

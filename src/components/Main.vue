@@ -13,25 +13,30 @@
       justify-space-around
       text-center"
   >
-    <div class="post">
-      <p>Типо главная страница, хз че тут писать</p>
+    <div>
+      <h1>Добро пожаловать в LinkCrop!</h1>
+      <p>Удобный способ сокращения и управления вашими ссылками.</p>
     </div>
-    <v-divider />
-    <div class="post">
-      <p>Наверное тут должны быть новости...</p>
-    </div>
-    <v-divider />
-    <div class="post">
-      <p>А может какие-нибудь зазывалки.</p>
-    </div>
-    <v-divider />
-    <div class="post">
-      <p>Типо в духе "О это лучший сайт для сокрытия ссылок и сборка статистики переходов по ним".</p>
-    </div>
-    <v-divider />
-    <div class="post">
-      <p>Но я сомневаюсь что эта зазывалка подходит...</p>
-    </div>
+    <!--    <section class="news">-->
+    <!--      <h2>Новости</h2>-->
+    <!--      <div>"Секция с карточками"</div>-->
+    <!--    </section>-->
+    <section class="features">
+      <h2>Наши преимущества</h2>
+      <div>"Секция с карточками"</div>
+    </section>
+    <section class="examples">
+      <h2>Как можно использовать наш сервис?</h2>
+      <div>"Секция с листом примеров"</div>
+    </section>
+    <section class="work">
+      <v-btn
+        variant="tonal"
+        class="bg-green"
+      >
+        Начать работу!
+      </v-btn>
+    </section>
   </main>
 </template>
 

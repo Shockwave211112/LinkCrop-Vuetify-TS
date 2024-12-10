@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminTab: typeof import('./src/components/Profile/ProfileTabs/AdminTab.vue')['default']
     AuthForm: typeof import('./src/components/Header/Auth/AuthForm.vue')['default']
+    Footer: typeof import('./src/components/Footer.vue')['default']
     GroupsTab: typeof import('./src/components/Profile/ProfileTabs/GroupsTab.vue')['default']
     Header: typeof import('./src/components/Header/Header.vue')['default']
     LinkEditForm: typeof import('./src/components/Profile/LinkEditForm.vue')['default']
@@ -19,5 +20,6 @@ declare module 'vue' {
     RegisterForm: typeof import('./src/components/Header/Auth/RegisterForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StatisticModal: typeof import('./src/components/Profile/StatisticModal.vue')['default']
   }
 }

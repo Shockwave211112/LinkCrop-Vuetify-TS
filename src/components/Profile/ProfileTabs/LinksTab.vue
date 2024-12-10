@@ -5,15 +5,19 @@ import {apiClient} from "@/plugins/axios";
 import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
 
 import type {NotifyFunction} from "@/types/objects";
+import StatisticModal from "@/components/Profile/StatisticModal.vue";
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
 const createDialog = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
+const statisticDialog = ref<boolean>(false);
+const selectedLinkId = ref<number>(-1);
 const loading = ref<boolean>(false);
 
 const search = ref<string>('');
 const showingGroups = ref<number[]>([]);
+const showingGroupsBeforeFocus = ref<number[]>([]);
 const searchField = ref<string>('name');
 const searchFields: object[] = [
   {title: 'Название', value: 'name'},
@@ -29,12 +33,11 @@ const currentOrder = ref<string>('id');
 const currentSortDir = ref<string>('desc');
 const totalPages = ref<number>(1);
 
-const tempCreationLink = ref<Link>({
+const tempCreationLink = reactive<Link>({
   id: 0,
   name: '',
   description: '',
   origin: '',
-  referral: '',
   updated_at: Date(),
   created_at: Date(),
   groups: [],
@@ -45,7 +48,7 @@ onMounted(() => {
   fetchGroups();
 });
 
-async function fetchLinks(withSearch: boolean = false) {
+async function fetchLinks(withFilters: boolean = false) {
   const params: {
     page: number,
     orderBy: string,
@@ -60,11 +63,12 @@ async function fetchLinks(withSearch: boolean = false) {
 
   };
 
-  if(withSearch) {
+  if(withFilters) {
     if(search.value) {
       params.search = search.value;
       params.searchBy = searchField.value;
     }
+
     if(showingGroups.value.length) {
       params.groups = showingGroups.value;
     }
@@ -82,37 +86,17 @@ async function fetchLinks(withSearch: boolean = false) {
 }
 
 async function fetchGroups() {
-  await apiClient.get('/groups?all=true')
+  await apiClient.get('/groups/all')
     .then(({data}) => {
       groups.value = data.data;
     })
 }
 
-async function save(validate, link: Link) {
-  const isValid = await validate();
-  if (isValid) {
-    await apiClient.patch('/links/' + link.id, {
-      'name': link.name,
-      'description': link.description,
-      'origin': link.origin,
-      'group_id': link.groups,
-    }).then(() => {
-      notify("Успешно сохранено!", 'success');
-    }).catch(({response}) => {
-      notify(response.data.message, 'error');
-    })
-  }
-}
+function filterByGroups(): void {
+  if(showingGroups.value.length === showingGroupsBeforeFocus.value.length
+    && showingGroups.value.sort().toString() === showingGroupsBeforeFocus.value.sort().toString()) return;
 
-async function deleteLink(id: number) {
-  await apiClient.delete('/links/' + id).then(() => {
-    notify("Успешно удалено!", 'success');
-    links.value.splice(links.value.findIndex(item => item.id == id), 1);
-  }).catch(({response}) => {
-    notify(response.data.message, 'error');
-  }).finally(() => {
-    deleteDialog.value = false;
-  })
+  fetchLinks(true);
 }
 
 function copyReferral(referral: string) {
@@ -125,16 +109,13 @@ function copyReferral(referral: string) {
 }
 
 function clearTempLink() {
-  tempCreationLink.value = {
-    id: 0,
-    name: '',
-    description: '',
-    origin: '',
-    referral: '',
-    updated_at: Date(),
-    created_at: Date(),
-    groups: [],
-  }
+  tempCreationLink.id = 0;
+  tempCreationLink.name = '';
+  tempCreationLink.description = '';
+  tempCreationLink.groups = [];
+  tempCreationLink.created_at = Date();
+  tempCreationLink.updated_at = Date();
+  tempCreationLink.origin = '';
 }
 
 async function create(validate, link: Link) {
@@ -150,8 +131,8 @@ async function create(validate, link: Link) {
       delete data.group_id;
     }
 
-    await apiClient.post('/links', data).then(() => {
-      notify("Создание успешно!", 'success');
+    await apiClient.post('/links', data).then((response) => {
+      notify(response.data.message, 'success');
       createDialog.value = false;
       clearTempLink();
       fetchLinks();
@@ -160,14 +141,63 @@ async function create(validate, link: Link) {
     })
   }
 }
+
+async function save(validate, link: Link) {
+  const isValid = await validate();
+  if (isValid) {
+    await apiClient.patch('/links/' + link.id, {
+      'name': link.name,
+      'description': link.description,
+      'origin': link.origin,
+      'group_id': link.groups,
+    }).then((response) => {
+      notify(response.data.message, 'success');
+    }).catch(({response}) => {
+      notify(response.data.message, 'error');
+    })
+  }
+}
+
+async function deleteLink(id: number) {
+  await apiClient.delete('/links/' + id).then((response) => {
+    notify(response.data.message, 'success');
+    fetchLinks(true);
+  }).catch(({response}) => {
+    notify(response.data.message, 'error');
+  }).finally(() => {
+    deleteDialog.value = false;
+    selectedLinkId.value = -1;
+  })
+}
+
+function openDialog(id: number, type: string) {
+  switch(type) {
+    case 'delete':
+      deleteDialog.value = true;
+      break;
+    case 'stats':
+      statisticDialog.value = true;
+
+      break;
+  }
+
+  selectedLinkId.value = id;
+}
 </script>
 
 <template>
   <v-card
-    class="bg-secondary"
+    class="bg-secondary d-flex flex-column h-100"
     :loading="loading"
     :disabled="loading"
   >
+    <template #loader="{ isActive }">
+      <v-progress-linear
+        :active="isActive"
+        color="accent"
+        indeterminate
+      />
+    </template>
     <v-card-title class="pa-4 d-flex align-center justify-space-between">
       <div
         class="title w-25"
@@ -189,6 +219,9 @@ async function create(validate, link: Link) {
           label="Поиск"
           prepend-inner-icon="mdi-magnify"
           hide-details="auto"
+          variant="solo-filled"
+          density="comfortable"
+          clearable
           @keyup.enter="fetchLinks(true)"
         />
         <v-select
@@ -197,10 +230,12 @@ async function create(validate, link: Link) {
           label="Где?"
           hide-details="auto"
           :items="searchFields"
+          variant="solo-filled"
+          density="comfortable"
         />
       </div>
       <div
-        class="sort w-25 d-flex justify-end"
+        class="group-filter w-25 d-flex justify-end"
       >
         <v-select
           v-model="showingGroups"
@@ -212,7 +247,10 @@ async function create(validate, link: Link) {
           item-title="name"
           multiple
           max-width="200"
-          @focusout="fetchLinks(true)"
+          variant="solo-filled"
+          density="comfortable"
+          @focusin="showingGroupsBeforeFocus = showingGroups"
+          @focusout="filterByGroups"
         >
           <template #selection="{item, index}">
             <v-chip
@@ -226,13 +264,13 @@ async function create(validate, link: Link) {
               v-else-if="index === 1"
               class="text-grey text-caption align-self-center"
             >
-              (+{{ showingGroups?.length - 1 }} др.)
+              (+{{ showingGroups?.length - 1 }})
             </span>
           </template>
         </v-select>
       </div>
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="d-flex flex-column flex-grow-1">
       <v-expansion-panels class="mb-4">
         <div
           v-for="link in links"
@@ -297,7 +335,7 @@ async function create(validate, link: Link) {
                     icon="mdi-chart-line-variant"
                     class="bg-accent mr-2"
                     size="small"
-                    @click.stop="copyReferral(link.referral)"
+                    @click.stop="openDialog(link.id, 'stats')"
                   />
                   <v-btn
                     icon="mdi-content-copy"
@@ -317,7 +355,7 @@ async function create(validate, link: Link) {
                   <v-btn
                     icon="mdi-trash-can-outline"
                     class="bg-error mr-3"
-                    @click="deleteDialog = true"
+                    @click="openDialog(link.id, 'delete')"
                   />
                   <v-btn
                     icon="mdi-content-save"
@@ -328,37 +366,21 @@ async function create(validate, link: Link) {
               </LinkEditForm>
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-dialog
-            v-model="deleteDialog"
-            max-width="400"
-            scrim="black"
-          >
-            <v-card>
-              <v-card-title>Уверены?</v-card-title>
-              <v-card-text>Вы точно хотите удалить ссылку?</v-card-text>
-              <v-card-actions>
-                <v-btn
-                  variant="text"
-                  @click="deleteLink(link.id)"
-                >
-                  Да
-                </v-btn>
-                <v-btn
-                  variant="text"
-                  @click="deleteDialog = false"
-                >
-                  Нет
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </div>
+        <h3
+          v-if="!links.length"
+          class="text-gray"
+        >
+          Ничего не найдено
+        </h3>
       </v-expansion-panels>
+      <v-spacer />
       <v-pagination
         v-model="currentPage"
         :length="totalPages"
+        :total-visible="6"
         rounded="circle"
-        @update:model-value="fetchLinks"
+        @update:model-value="fetchLinks(false)"
       />
     </v-card-text>
     <v-dialog
@@ -390,6 +412,35 @@ async function create(validate, link: Link) {
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400"
+      scrim="black"
+    >
+      <v-card>
+        <v-card-title>Уверены?</v-card-title>
+        <v-card-text>Вы точно хотите удалить ссылку?</v-card-text>
+        <v-card-actions>
+          <v-btn
+            variant="text"
+            @click="deleteLink(selectedLinkId)"
+          >
+            Да
+          </v-btn>
+          <v-btn
+            variant="text"
+            @click="deleteDialog = false"
+          >
+            Нет
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <StatisticModal
+      v-model="statisticDialog"
+      :link-id="selectedLinkId"
+      @close-stat="statisticDialog = false"
+    />
   </v-card>
 </template>
 

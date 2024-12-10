@@ -74,6 +74,7 @@ async function validateLinkForm() {
         variant="outlined"
         disabled
         label="Дата создания"
+        format="DD-MM-YYYY"
       />
     </v-col>
     <v-col

@@ -3,6 +3,7 @@ import 'vuetify/styles'
 
 import { createVuetify } from 'vuetify'
 import {VDateInput} from "vuetify/labs/VDateInput";
+import {ru} from "vuetify/locale";
 
 export default createVuetify({
   theme: {
@@ -15,6 +16,7 @@ export default createVuetify({
           selected: '#2196f3',
           error: '#cb2d2d',
           accent: '#00c6ff',
+          custom_scrim: 'rgba(0, 0, 0, 0.2)',
         },
       },
     },
@@ -24,5 +26,10 @@ export default createVuetify({
   },
   components: {
     VDateInput,
+  },
+  locale: {
+    locale: 'ru',
+    fallback: 'en',
+    messages: { ru },
   }
 })

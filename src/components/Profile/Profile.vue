@@ -10,7 +10,7 @@ const user = useUserStore().userData;
 </script>
 
 <template>
-  <main class="d-flex bg-secondary">
+  <main class="d-flex flex-grow-1 bg-secondary">
     <v-tabs
       v-model="tab"
       direction="vertical"
@@ -35,15 +35,24 @@ const user = useUserStore().userData;
     </v-tabs>
     <v-tabs-window
       v-model="tab"
-      class="w-100"
+      class="w-100 h-100"
     >
-      <v-tabs-window-item value="links">
+      <v-tabs-window-item
+        value="links"
+        class="tab-item"
+      >
         <LinksTab />
       </v-tabs-window-item>
-      <v-tabs-window-item value="groups">
+      <v-tabs-window-item
+        value="groups"
+        class="tab-item"
+      >
         <GroupsTab />
       </v-tabs-window-item>
-      <v-tabs-window-item value="admin">
+      <v-tabs-window-item
+        value="admin"
+        class="tab-item"
+      >
         <AdminTab />
       </v-tabs-window-item>
     </v-tabs-window>
@@ -51,8 +60,7 @@ const user = useUserStore().userData;
 </template>
 
 <style scoped>
-main {
-  //background: linear-gradient(145deg, rgba(0,0,0,1) 0%, rgba(0,9,22,1) 35%, rgba(0,14,36,1) 70%, rgba(0,23,56,1) 100%);
+.tab-item {
+  height: 100%;
 }
-
 </style>
