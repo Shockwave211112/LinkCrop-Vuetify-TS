@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import {inject, onMounted, reactive, ref} from "vue";
-import type {Group, Link} from "@/types/objects";
-import {apiClient} from "@/plugins/axios";
-import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
-
-import type {NotifyFunction} from "@/types/objects";
 import StatisticModal from "@/components/Profile/StatisticModal.vue";
+import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
+import {inject, onMounted, reactive, ref, watch} from "vue";
+import { useGroupStore } from "@/store/groups";
+import { apiClient }  from "@/plugins/axios";
+import type { Link, NotifyFunction } from "@/types/objects";
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
@@ -15,7 +14,8 @@ const statisticDialog = ref<boolean>(false);
 const selectedLinkId = ref<number>(-1);
 const loading = ref<boolean>(false);
 
-const search = ref<string>('');
+const searchQuery = ref<string>('');
+const debounceTimer = ref<number | null>(null);
 const showingGroups = ref<number[]>([]);
 const showingGroupsBeforeFocus = ref<number[]>([]);
 const searchField = ref<string>('name');
@@ -27,7 +27,7 @@ const searchFields: object[] = [
 ];
 
 const links = ref<Link[]>([]);
-const groups = ref<Group[]>([]);
+const groups = useGroupStore();
 const currentPage = ref<number>(1);
 const currentOrder = ref<string>('id');
 const currentSortDir = ref<string>('desc');
@@ -37,6 +37,7 @@ const tempCreationLink = reactive<Link>({
   id: 0,
   name: '',
   description: '',
+  referral: '',
   origin: '',
   updated_at: Date(),
   created_at: Date(),
@@ -45,7 +46,15 @@ const tempCreationLink = reactive<Link>({
 
 onMounted(() => {
   fetchLinks();
-  fetchGroups();
+});
+
+watch(searchQuery, () => {
+  if (debounceTimer.value) {
+    clearTimeout(debounceTimer.value);
+  }
+  debounceTimer.value = setTimeout(() => {
+    fetchLinks(true);
+  }, 700);
 });
 
 async function fetchLinks(withFilters: boolean = false) {
@@ -60,12 +69,11 @@ async function fetchLinks(withFilters: boolean = false) {
     page: currentPage.value,
     orderBy: currentOrder.value,
     dir: currentSortDir.value,
-
   };
 
   if(withFilters) {
-    if(search.value) {
-      params.search = search.value;
+    if(searchQuery.value) {
+      params.search = searchQuery.value;
       params.searchBy = searchField.value;
     }
 
@@ -82,13 +90,6 @@ async function fetchLinks(withFilters: boolean = false) {
       notify(response.data.message, 'error');
     }).finally(() => {
       loading.value = false;
-    })
-}
-
-async function fetchGroups() {
-  await apiClient.get('/groups/all')
-    .then(({data}) => {
-      groups.value = data.data;
     })
 }
 
@@ -171,25 +172,24 @@ async function deleteLink(id: number) {
 }
 
 function openDialog(id: number, type: string) {
+  selectedLinkId.value = id;
+
   switch(type) {
     case 'delete':
       deleteDialog.value = true;
       break;
     case 'stats':
       statisticDialog.value = true;
-
       break;
   }
-
-  selectedLinkId.value = id;
 }
 </script>
 
 <template>
   <v-card
     class="bg-secondary d-flex flex-column h-100"
-    :loading="loading"
-    :disabled="loading"
+    :loading="loading || groups.isLoading"
+    :disabled="loading || groups.isLoading"
   >
     <template #loader="{ isActive }">
       <v-progress-linear
@@ -198,7 +198,10 @@ function openDialog(id: number, type: string) {
         indeterminate
       />
     </template>
-    <v-card-title class="pa-4 d-flex align-center justify-space-between">
+    <v-card-title
+      v-if="!groups.isLoading"
+      class="pa-4 d-flex align-center justify-space-between"
+    >
       <div
         class="title w-25"
       >
@@ -214,7 +217,7 @@ function openDialog(id: number, type: string) {
         class="search w-25 d-flex"
       >
         <v-text-field
-          v-model="search"
+          v-model="searchQuery"
           class="w-50"
           label="Поиск"
           prepend-inner-icon="mdi-magnify"
@@ -222,7 +225,6 @@ function openDialog(id: number, type: string) {
           variant="solo-filled"
           density="comfortable"
           clearable
-          @keyup.enter="fetchLinks(true)"
         />
         <v-select
           v-model="searchField"
@@ -242,7 +244,7 @@ function openDialog(id: number, type: string) {
           label="Группы"
           placeholder="Все"
           hide-details="auto"
-          :items="groups"
+          :items="groups.groupList"
           item-value="id"
           item-title="name"
           multiple
@@ -316,7 +318,7 @@ function openDialog(id: number, type: string) {
                     :key="index"
                     class="ma-1"
                   >
-                    {{ groups.find(item => item.id == group)?.name }}
+                    {{ groups?.groupList?.find(item => item.id == group)?.name }}
                   </v-chip>
                 </v-col>
                 <v-col
@@ -349,7 +351,6 @@ function openDialog(id: number, type: string) {
             <v-expansion-panel-text>
               <LinkEditForm
                 :link="link"
-                :groups="groups"
               >
                 <template #buttons="{ validate }">
                   <v-btn
@@ -367,8 +368,12 @@ function openDialog(id: number, type: string) {
             </v-expansion-panel-text>
           </v-expansion-panel>
         </div>
+        <v-progress-circular
+          v-if="groups.isLoading || loading"
+          indeterminate
+        />
         <h3
-          v-if="!links.length"
+          v-else-if="!links.length"
           class="text-gray"
         >
           Ничего не найдено
@@ -393,7 +398,6 @@ function openDialog(id: number, type: string) {
         <v-card-text>
           <LinkEditForm
             :link="tempCreationLink"
-            :groups="groups"
           >
             <template #buttons="{ validate }">
               <v-btn

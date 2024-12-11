@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import {ref} from "vue";
-import {apiClient} from "@/plugins/axios";
-import type {User} from "@/types/objects";
+import { ref } from "vue";
+import { apiClient } from "@/plugins/axios";
+import type { User } from "@/types/objects";
 
 export const useUserStore = defineStore('user', () => {
   const userData = ref<User|null>(

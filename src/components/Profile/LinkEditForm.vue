@@ -5,7 +5,10 @@ import {required} from "@vuelidate/validators";
 import {useVuelidate} from "@vuelidate/core";
 
 import type {NotifyFunction} from "@/types/objects";
+import {useGroupStore} from "@/store/groups";
 const notify = inject('notify') as NotifyFunction;
+
+const groups = useGroupStore().groupList;
 
 const props =  defineProps({
   link: reactive<Link>({
@@ -18,11 +21,6 @@ const props =  defineProps({
     updated_at: Date(),
     groups: [],
   }),
-  groups: reactive<Group[]>([{
-    id: -999,
-    name: 'Placeholder',
-    description: 'Placeholder',
-  }]),
 })
 
 const rules = {

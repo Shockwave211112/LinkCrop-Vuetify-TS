@@ -134,9 +134,10 @@ async function fetchLinkInfo() {
         />
       </v-card-title>
       <v-card-text class="d-flex align-center justify-center">
-        <div v-if="loading">
-          Загрузка...
-        </div>
+        <v-progress-circular
+          v-if="loading"
+          indeterminate
+        />
         <div
           v-else
           class="w-100 h-100 align-center d-flex justify-center flex-column"

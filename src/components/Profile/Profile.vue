@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import LinksTab from "@/components/Profile/ProfileTabs/LinksTab.vue";
 import GroupsTab from "@/components/Profile/ProfileTabs/GroupsTab.vue";
 import AdminTab from "@/components/Profile/ProfileTabs/AdminTab.vue";
 import {useUserStore} from "@/store/user";
+import {useGroupStore} from "@/store/groups";
 
 const tab = ref<string>('links');
 const user = useUserStore().userData;
+const groups = useGroupStore();
+
+onMounted(() => {
+  groups.fetchGroups();
+})
+
 </script>
 
 <template>
