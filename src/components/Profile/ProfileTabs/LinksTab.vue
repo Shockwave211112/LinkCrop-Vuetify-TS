@@ -26,11 +26,18 @@ const searchFields: object[] = [
   {title: 'Эндпоинт', value: 'referral'},
 ];
 
+const currentOrder = ref<string>('id');
+const currentSortDir = ref<string>('desc');
+const sortOrders: object[] = [
+  {title: 'ID', value: 'id'},
+  {title: 'Название', value: 'name'},
+  {title: 'Описание', value: 'description'},
+  {title: 'Эндпоинт', value: 'referral'},
+];
+
 const links = ref<Link[]>([]);
 const groups = useGroupStore();
 const currentPage = ref<number>(1);
-const currentOrder = ref<string>('id');
-const currentSortDir = ref<string>('desc');
 const totalPages = ref<number>(1);
 
 const tempCreationLink = reactive<Link>({
@@ -82,6 +89,7 @@ async function fetchLinks(withFilters: boolean = false) {
     }
   }
   loading.value = true;
+
   await apiClient.get(`/links`, {params})
     .then(({data}) => {
       links.value = data.data;
@@ -211,7 +219,15 @@ function openDialog(id: number, type: string) {
           size="small"
           class="bg-accent ml-4"
           @click="createDialog = true"
-        />
+        >
+          <v-icon />
+          <v-tooltip
+            activator="parent"
+            location="top"
+          >
+            Создать ссылку
+          </v-tooltip>
+        </v-btn>
       </div>
       <div
         class="search w-25 d-flex"
@@ -239,6 +255,31 @@ function openDialog(id: number, type: string) {
       <div
         class="group-filter w-25 d-flex justify-end"
       >
+        <v-btn
+          v-model="currentSortDir"
+          hide-details="auto"
+          variant="plain"
+          :icon="currentSortDir == 'desc' ? 'mdi-arrow-down-thin': 'mdi-arrow-up-thin'"
+          @click="(currentSortDir == 'desc' ? currentSortDir = 'asc' : currentSortDir = 'desc'); fetchLinks(true)"
+        >
+          <v-icon />
+          <v-tooltip
+            activator="parent"
+            location="top"
+          >
+            Порядок сортировки
+          </v-tooltip>
+        </v-btn>
+        <v-select
+          v-model="currentOrder"
+          label="Сортировка"
+          hide-details="auto"
+          :items="sortOrders"
+          max-width="140"
+          variant="solo-filled"
+          density="comfortable"
+          @update:model-value="fetchLinks(true)"
+        />
         <v-select
           v-model="showingGroups"
           label="Группы"
@@ -280,9 +321,7 @@ function openDialog(id: number, type: string) {
           class="links w-100"
         >
           <v-expansion-panel>
-            <v-expansion-panel-title
-              v-slot="{ expanded }"
-            >
+            <v-expansion-panel-title>
               <v-row
                 no-gutters
                 class="align-center"
@@ -308,7 +347,7 @@ function openDialog(id: number, type: string) {
                   </div>
                 </v-col>
                 <v-col
-                  cols="3"
+                  cols="4"
                 >
                   <div class="opacity-30 pb-1">
                     Группы:
@@ -317,6 +356,7 @@ function openDialog(id: number, type: string) {
                     v-for="(group, index) in link.groups"
                     :key="index"
                     class="ma-1"
+                    size="small"
                   >
                     {{ groups?.groupList?.find(item => item.id == group)?.name }}
                   </v-chip>
@@ -329,24 +369,40 @@ function openDialog(id: number, type: string) {
                   </div>
                   <div>{{ link.referral }}</div>
                 </v-col>
-                <v-col
-                  cols="1"
-                  class="d-flex justify-end align-center"
-                >
+              </v-row>
+              <template #actions="{ expanded }">
+                <div>
                   <v-btn
                     icon="mdi-chart-line-variant"
                     class="bg-accent mr-2"
                     size="small"
                     @click.stop="openDialog(link.id, 'stats')"
-                  />
+                  >
+                    <v-icon />
+                    <v-tooltip
+                      activator="parent"
+                      location="top"
+                    >
+                      Открыть статистику
+                    </v-tooltip>
+                  </v-btn>
                   <v-btn
                     icon="mdi-content-copy"
                     size="small"
                     class="bg-accent mr-2"
                     @click.stop="copyReferral(link.referral)"
-                  />
-                </v-col>
-              </v-row>
+                  >
+                    <v-icon />
+                    <v-tooltip
+                      activator="parent"
+                      location="top"
+                    >
+                      Скопировать ссылку
+                    </v-tooltip>
+                  </v-btn>
+                  <v-icon :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+                </div>
+              </template>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <LinkEditForm
