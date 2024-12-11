@@ -150,7 +150,7 @@ a {
 
 .user:hover {
   cursor: pointer;
-  color: red;
+  color: var(--);
   transition: color 0.2s;
 }
 

@@ -10,7 +10,7 @@
 <script lang="ts" setup>
 import { provide, reactive } from 'vue';
 import Notification from "@/components/Notification.vue";
-import type {Notify} from "@/types/objects";
+import type { Notify } from "@/types/objects";
 
 const notifications = reactive<Notify[]>([]);
 const addNotification = (message: string, color?: string, timeout?: number) => {

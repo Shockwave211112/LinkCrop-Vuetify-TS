@@ -413,12 +413,28 @@ function openDialog(id: number, type: string) {
                     icon="mdi-trash-can-outline"
                     class="bg-error mr-3"
                     @click="openDialog(link.id, 'delete')"
-                  />
+                  >
+                    <v-icon />
+                    <v-tooltip
+                      activator="parent"
+                      location="top"
+                    >
+                      Удалить
+                    </v-tooltip>
+                  </v-btn>
                   <v-btn
                     icon="mdi-content-save"
                     class="bg-success"
                     @click="save(validate, link)"
-                  />
+                  >
+                    <v-icon />
+                    <v-tooltip
+                      activator="parent"
+                      location="top"
+                    >
+                      Сохранить
+                    </v-tooltip>
+                  </v-btn>
                 </template>
               </LinkEditForm>
             </v-expansion-panel-text>
@@ -460,13 +476,28 @@ function openDialog(id: number, type: string) {
                 icon="mdi-restore"
                 class="bg-primary mr-3"
                 @click="clearTempLink"
-              />
+              >
+                <v-icon />
+                <v-tooltip
+                  activator="parent"
+                  location="top"
+                >
+                  Сбросить поля
+                </v-tooltip>
+              </v-btn>
               <v-btn
                 icon="mdi-content-save"
                 class="bg-success"
-
                 @click="create(validate, tempCreationLink)"
-              />
+              >
+                <v-icon />
+                <v-tooltip
+                  activator="parent"
+                  location="top"
+                >
+                  Сохранить
+                </v-tooltip>
+              </v-btn>
             </template>
           </LinkEditForm>
         </v-card-text>

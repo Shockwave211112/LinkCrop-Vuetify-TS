@@ -34,4 +34,7 @@ export interface Group {
   id: number,
   name: string,
   description: string,
+  count: number,
+  updated_at: string,
+  created_at: string,
 }
