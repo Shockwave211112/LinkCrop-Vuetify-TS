@@ -4,8 +4,10 @@ import {inject, onMounted, reactive, ref, watch} from "vue";
 import { apiClient }  from "@/plugins/axios";
 import type {Group, NotifyFunction} from "@/types/objects";
 import {useGroupStore} from "@/store/groups";
+import {useLinkStore} from "@/store/links";
 const notify = inject('notify') as NotifyFunction;
 
+const linkStore = useLinkStore();
 const createDialog = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
 const selectedGroupId = ref<number>(-1);
@@ -109,7 +111,7 @@ async function create(validate, group: Group) {
       notify(response.data.message, 'success');
       createDialog.value = false;
       clearTempGroup();
-      fetchGroups();
+      fetchGroups(true);
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
@@ -126,6 +128,7 @@ async function save(validate, group: Group) {
       'description': group.description,
     }).then((response) => {
       notify(response.data.message, 'success');
+      linkStore.fetchLinks(true);
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
@@ -138,6 +141,7 @@ async function deleteGroup(id: number) {
   await apiClient.delete('/groups/' + id).then((response) => {
     notify(response.data.message, 'success');
     fetchGroups(true);
+    linkStore.fetchLinks(true);
   }).catch(({response}) => {
     notify(response.data.message, 'error');
   }).finally(() => {
@@ -327,7 +331,7 @@ function openDialog(id: number, type: string) {
           </v-expansion-panel>
         </div>
         <v-progress-circular
-          v-if="loading"
+          v-if="loading && !groups.length"
           indeterminate
         />
         <h3

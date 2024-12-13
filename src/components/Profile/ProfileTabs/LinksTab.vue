@@ -5,40 +5,32 @@ import {inject, onMounted, reactive, ref, watch} from "vue";
 import { useGroupStore } from "@/store/groups";
 import { apiClient }  from "@/plugins/axios";
 import type { Link, NotifyFunction } from "@/types/objects";
+import {useLinkStore} from "@/store/links";
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
+
+const linkStore = useLinkStore();
+const groupStore = useGroupStore();
+
 const createDialog = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
 const statisticDialog = ref<boolean>(false);
 const selectedLinkId = ref<number>(-1);
-const loading = ref<boolean>(false);
-
-const searchQuery = ref<string>('');
-const debounceTimer = ref<number | null>(null);
-const showingGroups = ref<number[]>([]);
 const showingGroupsBeforeFocus = ref<number[]>([]);
-const searchField = ref<string>('name');
+
 const searchFields: object[] = [
   {title: 'Название', value: 'name'},
   {title: 'Описание', value: 'description'},
   {title: 'Куда', value: 'origin'},
   {title: 'Эндпоинт', value: 'referral'},
 ];
-
-const currentOrder = ref<string>('id');
-const currentSortDir = ref<string>('desc');
 const sortOrders: object[] = [
   {title: 'ID', value: 'id'},
   {title: 'Название', value: 'name'},
   {title: 'Описание', value: 'description'},
   {title: 'Эндпоинт', value: 'referral'},
 ];
-
-const links = ref<Link[]>([]);
-const groups = useGroupStore();
-const currentPage = ref<number>(1);
-const totalPages = ref<number>(1);
 
 const tempCreationLink = reactive<Link>({
   id: 0,
@@ -52,60 +44,14 @@ const tempCreationLink = reactive<Link>({
 });
 
 onMounted(() => {
-  fetchLinks();
+  linkStore.fetchLinks();
 });
-
-watch(searchQuery, () => {
-  if (debounceTimer.value) {
-    clearTimeout(debounceTimer.value);
-  }
-  debounceTimer.value = setTimeout(() => {
-    fetchLinks(true);
-  }, 700);
-});
-
-async function fetchLinks(withFilters: boolean = false) {
-  const params: {
-    page: number,
-    orderBy: string,
-    dir: string,
-    search?: string,
-    searchBy?: string,
-    groups?: number[],
-  } = {
-    page: currentPage.value,
-    orderBy: currentOrder.value,
-    dir: currentSortDir.value,
-  };
-
-  if(withFilters) {
-    if(searchQuery.value) {
-      params.search = searchQuery.value;
-      params.searchBy = searchField.value;
-    }
-
-    if(showingGroups.value.length) {
-      params.groups = showingGroups.value;
-    }
-  }
-  loading.value = true;
-
-  await apiClient.get(`/links`, {params})
-    .then(({data}) => {
-      links.value = data.data;
-      totalPages.value = data.last_page;
-    }).catch(({response}) => {
-      notify(response.data.message, 'error');
-    }).finally(() => {
-      loading.value = false;
-    })
-}
 
 function filterByGroups(): void {
-  if(showingGroups.value.length === showingGroupsBeforeFocus.value.length
-    && showingGroups.value.sort().toString() === showingGroupsBeforeFocus.value.sort().toString()) return;
+  if(linkStore.showingGroups.length === showingGroupsBeforeFocus.value.length
+    && linkStore.showingGroups.sort().toString() === showingGroupsBeforeFocus.value.sort().toString()) return;
 
-  fetchLinks(true);
+  linkStore.fetchLinks(true);
 }
 
 function copyReferral(referral: string) {
@@ -144,7 +90,7 @@ async function create(validate, link: Link) {
       notify(response.data.message, 'success');
       createDialog.value = false;
       clearTempLink();
-      fetchLinks();
+      linkStore.fetchLinks(true);
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     })
@@ -170,7 +116,7 @@ async function save(validate, link: Link) {
 async function deleteLink(id: number) {
   await apiClient.delete('/links/' + id).then((response) => {
     notify(response.data.message, 'success');
-    fetchLinks(true);
+    linkStore.fetchLinks(true);
   }).catch(({response}) => {
     notify(response.data.message, 'error');
   }).finally(() => {
@@ -196,8 +142,8 @@ function openDialog(id: number, type: string) {
 <template>
   <v-card
     class="bg-secondary d-flex flex-column h-100"
-    :loading="loading || groups.isLoading"
-    :disabled="loading || groups.isLoading"
+    :loading="linkStore.isLoading || groupStore.isLoading"
+    :disabled="linkStore.isLoading || groupStore.isLoading"
   >
     <template #loader="{ isActive }">
       <v-progress-linear
@@ -207,7 +153,7 @@ function openDialog(id: number, type: string) {
       />
     </template>
     <v-card-title
-      v-if="!groups.isLoading"
+      v-if="!groupStore.isLoading"
       class="pa-4 d-flex align-center justify-space-between"
     >
       <div
@@ -233,7 +179,7 @@ function openDialog(id: number, type: string) {
         class="search w-25 d-flex"
       >
         <v-text-field
-          v-model="searchQuery"
+          v-model="linkStore.searchQuery"
           class="w-50"
           label="Поиск"
           prepend-inner-icon="mdi-magnify"
@@ -243,7 +189,7 @@ function openDialog(id: number, type: string) {
           clearable
         />
         <v-select
-          v-model="searchField"
+          v-model="linkStore.searchField"
           class="w-25"
           label="Где?"
           hide-details="auto"
@@ -256,11 +202,14 @@ function openDialog(id: number, type: string) {
         class="group-filter w-25 d-flex justify-end"
       >
         <v-btn
-          v-model="currentSortDir"
+          v-model="linkStore.currentSortDir"
           hide-details="auto"
           variant="plain"
-          :icon="currentSortDir == 'desc' ? 'mdi-arrow-down-thin': 'mdi-arrow-up-thin'"
-          @click="(currentSortDir == 'desc' ? currentSortDir = 'asc' : currentSortDir = 'desc'); fetchLinks(true)"
+          :icon="linkStore.currentSortDir == 'desc' ? 'mdi-arrow-down-thin': 'mdi-arrow-up-thin'"
+          @click="(linkStore.currentSortDir == 'desc'
+                    ? linkStore.currentSortDir = 'asc'
+                    : linkStore.currentSortDir = 'desc');
+                  linkStore.fetchLinks(true)"
         >
           <v-icon />
           <v-tooltip
@@ -271,28 +220,28 @@ function openDialog(id: number, type: string) {
           </v-tooltip>
         </v-btn>
         <v-select
-          v-model="currentOrder"
+          v-model="linkStore.currentOrder"
           label="Сортировка"
           hide-details="auto"
           :items="sortOrders"
           max-width="140"
           variant="solo-filled"
           density="comfortable"
-          @update:model-value="fetchLinks(true)"
+          @update:model-value="linkStore.fetchLinks(true)"
         />
         <v-select
-          v-model="showingGroups"
+          v-model="linkStore.showingGroups"
           label="Группы"
           placeholder="Все"
           hide-details="auto"
-          :items="groups.groupList"
+          :items="groupStore.groupList"
           item-value="id"
           item-title="name"
           multiple
           max-width="200"
           variant="solo-filled"
           density="comfortable"
-          @focusin="showingGroupsBeforeFocus = showingGroups"
+          @focusin="showingGroupsBeforeFocus = linkStore.showingGroups"
           @focusout="filterByGroups"
         >
           <template #selection="{item, index}">
@@ -307,7 +256,7 @@ function openDialog(id: number, type: string) {
               v-else-if="index === 1"
               class="text-grey text-caption align-self-center"
             >
-              (+{{ showingGroups?.length - 1 }})
+              (+{{ linkStore.showingGroups?.length - 1 }})
             </span>
           </template>
         </v-select>
@@ -316,7 +265,7 @@ function openDialog(id: number, type: string) {
     <v-card-text class="d-flex flex-column flex-grow-1">
       <v-expansion-panels class="mb-4">
         <div
-          v-for="link in links"
+          v-for="link in linkStore.links"
           :key="link.id"
           class="links w-100"
         >
@@ -358,7 +307,7 @@ function openDialog(id: number, type: string) {
                     class="ma-1"
                     size="small"
                   >
-                    {{ groups?.groupList?.find(item => item.id == group)?.name }}
+                    {{ groupStore?.groupList?.find(item => item.id == group)?.name }}
                   </v-chip>
                 </v-col>
                 <v-col
@@ -441,11 +390,11 @@ function openDialog(id: number, type: string) {
           </v-expansion-panel>
         </div>
         <v-progress-circular
-          v-if="groups.isLoading || loading"
+          v-if="(groupStore.isLoading || linkStore.isLoading) && !linkStore.links"
           indeterminate
         />
         <h3
-          v-else-if="!links.length"
+          v-else-if="!linkStore.links?.length"
           class="text-gray"
         >
           Ничего не найдено
@@ -453,11 +402,11 @@ function openDialog(id: number, type: string) {
       </v-expansion-panels>
       <v-spacer />
       <v-pagination
-        v-model="currentPage"
-        :length="totalPages"
+        v-model="linkStore.currentPage"
+        :length="linkStore.totalPages"
         :total-visible="6"
         rounded="circle"
-        @update:model-value="fetchLinks(false)"
+        @update:model-value="linkStore.fetchLinks(false)"
       />
     </v-card-text>
     <v-dialog
