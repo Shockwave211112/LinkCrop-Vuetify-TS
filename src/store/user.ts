@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from "vue";
 import { apiClient } from "@/plugins/axios";
 import type { User } from "@/types/objects";
+import router from "@/router";
 
 export const useUserStore = defineStore('user', () => {
   const userData = ref<User|null>(
@@ -23,6 +24,8 @@ export const useUserStore = defineStore('user', () => {
 
         localStorage.setItem('user', JSON.stringify(userObject));
         userData.value = userObject;
+
+        router.push('/profile');
       });
   }
 

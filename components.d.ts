@@ -22,5 +22,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StatisticModal: typeof import('./src/components/Profile/StatisticModal.vue')['default']
+    UserSettingsTab: typeof import('./src/components/Profile/ProfileTabs/UserSettingsTab.vue')['default']
   }
 }

@@ -42,6 +42,20 @@ async function auth(): Promise<void> {
     notify("Неправильные данные!", 'error');
   }
 };
+
+async function getOauthLink(provider: string = 'google') {
+  try {
+    await apiClient.get(`/auth/${provider}/redirect`)
+      .then(({data}) => {
+        window.location.href = data.redirect_url
+      }
+    ).catch(({response}) => {
+      notify(response.data.message, 'error');
+    })
+  } catch (error) {
+    notify("Неправильные данные!", 'error');
+  }
+}
 </script>
 
 <template>
@@ -65,6 +79,27 @@ async function auth(): Promise<void> {
           :error="v$.password.$error"
           :error-messages="v$.password.$errors[0]?.$message.toString()"
         />
+
+        <v-spacer />
+
+        <div class="social d-flex flex-column align-center">
+          <div class="text-grey">
+            или войти с помощью соц. сетей:
+          </div>
+          <div class="buttons mt-2">
+            <v-btn
+              icon="mdi-google"
+              variant="tonal"
+              class="mr-2"
+              @click="getOauthLink('google')"
+            />
+            <v-btn
+              icon="mdi-facebook"
+              variant="tonal"
+              @click="getOauthLink('facebook')"
+            />
+          </div>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
