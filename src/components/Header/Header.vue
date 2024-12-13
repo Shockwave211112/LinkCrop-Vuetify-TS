@@ -150,7 +150,7 @@ a {
 
 .user:hover {
   cursor: pointer;
-  color: var(--);
+  color: rgb(var(--v-theme-accent));
   transition: color 0.2s;
 }
 
