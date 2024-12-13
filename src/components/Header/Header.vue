@@ -8,18 +8,35 @@ import type {NotifyFunction} from "@/types/objects";
 
 import AuthForm from './Auth/AuthForm.vue';
 import RegisterForm from './Auth/RegisterForm.vue';
+import ForgotPasswordForm from "@/components/Header/Auth/ForgotPasswordForm.vue";
 
 
 const menu = ref(false);
 const register = ref(false);
+const forgot = ref(false);
+
 watch(menu, (newValue) => {
   if(!newValue) {
     register.value = false
+    forgot.value = false
   }
 });
 
-const switchForm = () => {
-  register.value = !register.value
+const switchForm = (action: string = 'auth') => {
+  switch(action) {
+    case 'auth':
+      register.value = false;
+      forgot.value = false;
+      break;
+    case 'register':
+      register.value = true;
+      forgot.value = false;
+      break;
+    case 'forgot':
+      register.value = false;
+      forgot.value = true;
+      break;
+  }
 };
 
 const notify = inject('notify') as NotifyFunction;
@@ -76,13 +93,18 @@ async function logout() {
           name="fade"
           mode="out-in"
         >
-          <AuthForm
-            v-if="!register"
-            @switch="switchForm"
-          />
           <RegisterForm
+            v-if="register"
+            @switch="switchForm('auth')"
+          />
+          <ForgotPasswordForm
+            v-else-if="forgot"
+            @switch="switchForm('auth')"
+          />
+          <AuthForm
             v-else
-            @switch="switchForm"
+            @switch="switchForm('register')"
+            @forgot="switchForm('forgot')"
           />
         </transition>
       </v-card>

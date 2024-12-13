@@ -16,7 +16,6 @@ export default createVuetify({
           selected: '#2196f3',
           error: '#cb2d2d',
           accent: '#00c6ff',
-          custom_scrim: 'rgba(0, 0, 0, 0.2)',
         },
       },
     },

@@ -76,29 +76,18 @@ async function getOauthLink(provider: string = 'google') {
           type="password"
           variant="outlined"
           label="Пароль"
+          hide-details="auto"
           :error="v$.password.$error"
           :error-messages="v$.password.$errors[0]?.$message.toString()"
         />
-
-        <v-spacer />
-
-        <div class="social d-flex flex-column align-center">
-          <div class="text-grey">
-            или войти с помощью соц. сетей:
-          </div>
-          <div class="buttons mt-2">
-            <v-btn
-              icon="mdi-google"
-              variant="tonal"
-              class="mr-2"
-              @click="getOauthLink('google')"
-            />
-            <v-btn
-              icon="mdi-facebook"
-              variant="tonal"
-              @click="getOauthLink('facebook')"
-            />
-          </div>
+        <div class="d-flex justify-end mt-2 mb-2">
+          <v-btn
+            variant="text"
+            size="small"
+            @click="$emit('forgot')"
+          >
+            Забыли пароль?
+          </v-btn>
         </div>
       </v-card-text>
       <v-card-actions>
@@ -114,10 +103,30 @@ async function getOauthLink(provider: string = 'google') {
           @click="$emit('switch')"
         />
       </v-card-actions>
+      <div class="social d-flex flex-column align-center mb-5">
+        <div class="text-grey">
+          Или войти с помощью соц. сетей:
+        </div>
+        <div class="buttons mt-2">
+          <v-btn
+            icon="mdi-google"
+            variant="tonal"
+            class="mr-2"
+            @click="getOauthLink('google')"
+          />
+          <v-btn
+            icon="mdi-facebook"
+            variant="tonal"
+            @click="getOauthLink('facebook')"
+          />
+        </div>
+      </div>
     </v-form>
   </div>
 </template>
 
 <style scoped>
-
+.social {
+  font-size: small
+}
 </style>
