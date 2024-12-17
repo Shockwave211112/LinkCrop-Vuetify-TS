@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-screen">
+  <div class="d-flex flex-column h-100">
     <Header />
     <Profile />
     <Footer />
@@ -14,4 +14,8 @@ import Footer from "@/components/Footer.vue";
 </script>
 
 <style scoped>
+div {
+  background-image: url("src/assets/imgs/patterns.jpg");
+  background-size: auto;
+}
 </style>

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdminTab: typeof import('./src/components/Profile/ProfileTabs/AdminTab.vue')['default']
+    AdvantageCard: typeof import('./src/components/Index/AdvantageCard.vue')['default']
     AuthForm: typeof import('./src/components/Header/Auth/AuthForm.vue')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
     ForgotForm: typeof import('./src/components/Header/Auth/ForgotForm.vue')['default']

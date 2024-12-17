@@ -164,7 +164,7 @@ function openDialog(id: number, type: string) {
 
 <template>
   <v-card
-    class="bg-secondary d-flex flex-column h-100"
+    class="groups-list d-flex flex-column h-100"
     :loading="loading"
     :disabled="loading"
   >
@@ -176,7 +176,7 @@ function openDialog(id: number, type: string) {
       />
     </template>
     <v-card-title
-      class="pa-4 d-flex align-center justify-space-between"
+      class="bg-secondary pa-4 d-flex align-center justify-space-between"
     >
       <div
         class="title w-25"
@@ -421,7 +421,11 @@ function openDialog(id: number, type: string) {
 </template>
 
 <style scoped>
-.links {
+.groups {
   font-size: large;
+}
+
+.groups-list {
+  background-color: rgba(var(--v-theme-secondary), 0.9);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-screen bg-primary">
+  <div class="d-flex flex-column h-screen">
     <Header />
     <Main />
     <Footer />
@@ -14,4 +14,8 @@ import Profile from "@/pages/profile.vue";
 </script>
 
 <style scoped>
+div {
+  background-image: url("src/assets/imgs/code_background.jpg");
+  background-size: cover;
+}
 </style>

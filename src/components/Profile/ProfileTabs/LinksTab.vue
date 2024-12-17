@@ -141,7 +141,7 @@ function openDialog(id: number, type: string) {
 
 <template>
   <v-card
-    class="bg-secondary d-flex flex-column h-100"
+    class="links-list d-flex flex-column h-100"
     :loading="linkStore.isLoading || groupStore.isLoading"
     :disabled="linkStore.isLoading || groupStore.isLoading"
   >
@@ -154,7 +154,7 @@ function openDialog(id: number, type: string) {
     </template>
     <v-card-title
       v-if="!groupStore.isLoading"
-      class="pa-4 d-flex align-center justify-space-between"
+      class="bg-secondary pa-4 d-flex align-center justify-space-between"
     >
       <div
         class="title w-25"
@@ -406,6 +406,7 @@ function openDialog(id: number, type: string) {
         :length="linkStore.totalPages"
         :total-visible="6"
         rounded="circle"
+        class="bg-none"
         @update:model-value="linkStore.fetchLinks(false)"
       />
     </v-card-text>
@@ -487,5 +488,9 @@ function openDialog(id: number, type: string) {
 <style scoped>
 .links {
   font-size: large;
+}
+
+.links-list {
+  background-color: rgba(var(--v-theme-secondary), 0.9);
 }
 </style>

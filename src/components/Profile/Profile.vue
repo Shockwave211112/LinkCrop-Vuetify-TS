@@ -17,7 +17,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="d-flex flex-grow-1 bg-secondary">
+  <main class="d-flex flex-grow-1">
     <v-tabs
       v-model="tab"
       direction="vertical"
@@ -67,6 +67,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+main {
+  background-color: rgba(var(--v-theme-secondary), 0.8);
+  backdrop-filter: blur(3px) contrast(140%);
+}
+
 .tab-item {
   height: 100%;
 }
