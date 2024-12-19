@@ -10,6 +10,7 @@ declare module 'vue' {
     AdminTab: typeof import('./src/components/Profile/ProfileTabs/AdminTab.vue')['default']
     AdvantageCard: typeof import('./src/components/Index/AdvantageCard.vue')['default']
     AuthForm: typeof import('./src/components/Header/Auth/AuthForm.vue')['default']
+    DeleteModal: typeof import('./src/components/Profile/Modals/DeleteModal.vue')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
     ForgotForm: typeof import('./src/components/Header/Auth/ForgotForm.vue')['default']
     ForgotPasswordForm: typeof import('./src/components/Header/Auth/ForgotPasswordForm.vue')['default']
@@ -17,7 +18,7 @@ declare module 'vue' {
     GroupsTab: typeof import('./src/components/Profile/ProfileTabs/GroupsTab.vue')['default']
     Header: typeof import('./src/components/Header/Header.vue')['default']
     LinkEditForm: typeof import('./src/components/Profile/LinkEditForm.vue')['default']
-    LinksTab: typeof import('./src/components/Profile/ProfileTabs/LinksTab.vue')['default']
+    LinksTab: typeof import('./src/components/Profile/Admin/LinksTab.vue')['default']
     Main: typeof import('./src/components/Main.vue')['default']
     Notification: typeof import('./src/components/Notification.vue')['default']
     Profile: typeof import('./src/components/Profile/Profile.vue')['default']
@@ -25,7 +26,9 @@ declare module 'vue' {
     ResetPasswordForm: typeof import('./src/components/Header/Auth/ResetPasswordForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    StatisticModal: typeof import('./src/components/Profile/StatisticModal.vue')['default']
+    StatisticModal: typeof import('./src/components/Profile/Modals/StatisticModal.vue')['default']
+    UserEditModal: typeof import('./src/components/Profile/Modals/UserEditModal.vue')['default']
     UserSettingsTab: typeof import('./src/components/Profile/ProfileTabs/UserSettingsTab.vue')['default']
+    UsersTab: typeof import('./src/components/Profile/Admin/UsersTab.vue')['default']
   }
 }

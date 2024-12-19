@@ -5,6 +5,7 @@ import { apiClient }  from "@/plugins/axios";
 import type {Group, NotifyFunction} from "@/types/objects";
 import {useGroupStore} from "@/store/groups";
 import {useLinkStore} from "@/store/links";
+import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 const notify = inject('notify') as NotifyFunction;
 
 const linkStore = useLinkStore();
@@ -137,20 +138,6 @@ async function save(validate, group: Group) {
   }
 }
 
-async function deleteGroup(id: number) {
-  await apiClient.delete('/groups/' + id).then((response) => {
-    notify(response.data.message, 'success');
-    fetchGroups(true);
-    linkStore.fetchLinks(true);
-  }).catch(({response}) => {
-    notify(response.data.message, 'error');
-  }).finally(() => {
-    deleteDialog.value = false;
-    selectedGroupId.value = -1;
-    groupStore.fetchGroups();
-  })
-}
-
 function openDialog(id: number, type: string) {
   selectedGroupId.value = id;
 
@@ -159,6 +146,12 @@ function openDialog(id: number, type: string) {
       deleteDialog.value = true;
       break;
   }
+}
+
+function deleteItem() {
+  selectedGroupId.value = -1;
+  deleteDialog.value = false;
+  fetchGroups(true);
 }
 </script>
 
@@ -336,7 +329,7 @@ function openDialog(id: number, type: string) {
         />
         <h3
           v-else-if="!groups.length"
-          class="text-gray"
+          class="text-gray font-weight-light"
         >
           Ничего не найдено
         </h3>
@@ -347,9 +340,16 @@ function openDialog(id: number, type: string) {
         :length="totalPages"
         :total-visible="6"
         rounded="circle"
-        @update:model-value="fetchGroups(false)"
+        @update:model-value="fetchGroups()"
       />
     </v-card-text>
+    <DeleteModal
+      v-model="deleteDialog"
+      :selected-id="selectedGroupId"
+      :selected-model="'groups'"
+      @close-modal="deleteDialog = false; selectedGroupId = -1;"
+      @delete-item="deleteItem"
+    />
     <v-dialog
       v-model="createDialog"
       max-width="1000px"
@@ -391,30 +391,6 @@ function openDialog(id: number, type: string) {
             </template>
           </GroupEditForm>
         </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="deleteDialog"
-      max-width="400"
-      scrim="black"
-    >
-      <v-card>
-        <v-card-title>Уверены?</v-card-title>
-        <v-card-text>Вы точно хотите удалить ссылку?</v-card-text>
-        <v-card-actions>
-          <v-btn
-            variant="text"
-            @click="deleteGroup(selectedGroupId)"
-          >
-            Да
-          </v-btn>
-          <v-btn
-            variant="text"
-            @click="deleteDialog = false"
-          >
-            Нет
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-card>

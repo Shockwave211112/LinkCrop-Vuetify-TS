@@ -88,6 +88,7 @@ async function register(): Promise<void> {
           variant="outlined"
           type="password"
           label="Пароль"
+          autocomplete="off"
           :error="v$.password.$error"
           :class="v$.password.$error ? 'pb-2' : ''"
           :error-messages="v$.password.$errors[0]?.$message.toString()"
@@ -97,6 +98,7 @@ async function register(): Promise<void> {
           type="password"
           variant="outlined"
           label="Повтор пароля"
+          autocomplete="off"
           :error="v$.passwordConfirmation.$error"
           :error-messages="v$.passwordConfirmation.$errors[0]?.$message.toString()"
         />

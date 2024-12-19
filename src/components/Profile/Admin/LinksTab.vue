@@ -5,13 +5,10 @@ import {inject, onMounted, reactive, ref, watch} from "vue";
 import { useGroupStore } from "@/store/groups";
 import { apiClient }  from "@/plugins/axios";
 import type { Link, NotifyFunction } from "@/types/objects";
-import {useLinkStore} from "@/store/links";
-import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
 
-const linkStore = useLinkStore();
 const groupStore = useGroupStore();
 
 const createDialog = ref<boolean>(false);
@@ -19,6 +16,66 @@ const deleteDialog = ref<boolean>(false);
 const statisticDialog = ref<boolean>(false);
 const selectedLinkId = ref<number>(-1);
 const showingGroupsBeforeFocus = ref<number[]>([]);
+
+const links = ref<Link[]|null>(null);
+const currentPage = ref<number>(1);
+const totalPages = ref<number>(1);
+
+const currentOrder = ref<string>('id');
+const currentSortDir = ref<string>('desc');
+const searchQuery = ref<string>('');
+const searchField = ref<string>('name');
+const showingGroups = ref<number[]>([]);
+
+const isLoading = ref<boolean>(true);
+const debounceTimer = ref<number | null>(null);
+
+async function fetchLinks(withFilters: boolean = false) {
+  const params: {
+    page: number,
+    orderBy: string,
+    dir: string,
+    search?: string,
+    searchBy?: string,
+    groups?: number[],
+  } = {
+    page: currentPage.value,
+    orderBy: currentOrder.value,
+    dir: currentSortDir.value,
+  };
+
+  if(withFilters) {
+    if(searchQuery.value) {
+      params.search = searchQuery.value;
+      params.searchBy = searchField.value;
+    }
+
+    if(showingGroups.value.length) {
+      params.groups = showingGroups.value;
+    }
+  }
+  isLoading.value = true;
+
+  await apiClient.get(`/admin/links`, {params})
+    .then(({data}) => {
+      links.value = data.data;
+      totalPages.value = data.last_page;
+    }).catch(({response}) => {
+      notify(response.data.message, 'error');
+    }).finally(() => {
+      isLoading.value = false;
+    })
+}
+
+
+watch(searchQuery, () => {
+  if (debounceTimer.value) {
+    clearTimeout(debounceTimer.value);
+  }
+  debounceTimer.value = setTimeout(() => {
+    fetchLinks(true);
+  }, 700);
+});
 
 const searchFields: object[] = [
   {title: 'Название', value: 'name'},
@@ -45,14 +102,14 @@ const tempCreationLink = reactive<Link>({
 });
 
 onMounted(() => {
-  linkStore.fetchLinks();
+  fetchLinks();
 });
 
 function filterByGroups(): void {
-  if(linkStore.showingGroups.length === showingGroupsBeforeFocus.value.length
-    && linkStore.showingGroups.sort().toString() === showingGroupsBeforeFocus.value.sort().toString()) return;
+  if(showingGroups.value.length === showingGroupsBeforeFocus.value.length
+    && showingGroups.value.sort().toString() === showingGroupsBeforeFocus.value.sort().toString()) return;
 
-  linkStore.fetchLinks(true);
+  fetchLinks(true);
 }
 
 function copyReferral(referral: string) {
@@ -91,7 +148,7 @@ async function create(validate, link: Link) {
       notify(response.data.message, 'success');
       createDialog.value = false;
       clearTempLink();
-      linkStore.fetchLinks(true);
+      fetchLinks(true);
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     })
@@ -114,6 +171,18 @@ async function save(validate, link: Link) {
   }
 }
 
+async function deleteLink(id: number) {
+  await apiClient.delete('/links/' + id).then((response) => {
+    notify(response.data.message, 'success');
+    fetchLinks(true);
+  }).catch(({response}) => {
+    notify(response.data.message, 'error');
+  }).finally(() => {
+    deleteDialog.value = false;
+    selectedLinkId.value = -1;
+  })
+}
+
 function openDialog(id: number, type: string) {
   selectedLinkId.value = id;
 
@@ -126,19 +195,13 @@ function openDialog(id: number, type: string) {
       break;
   }
 }
-
-function deleteItem() {
-  selectedLinkId.value = -1;
-  deleteDialog.value = false;
-  linkStore.fetchLinks(true);
-}
 </script>
 
 <template>
   <v-card
     class="links-list d-flex flex-column h-100"
-    :loading="linkStore.isLoading || groupStore.isLoading"
-    :disabled="linkStore.isLoading || groupStore.isLoading"
+    :loading="isLoading || groupStore.isLoading"
+    :disabled="isLoading || groupStore.isLoading"
   >
     <template #loader="{ isActive }">
       <v-progress-linear
@@ -174,7 +237,7 @@ function deleteItem() {
         class="search w-25 d-flex"
       >
         <v-text-field
-          v-model="linkStore.searchQuery"
+          v-model="searchQuery"
           class="w-50"
           label="Поиск"
           prepend-inner-icon="mdi-magnify"
@@ -184,7 +247,7 @@ function deleteItem() {
           clearable
         />
         <v-select
-          v-model="linkStore.searchField"
+          v-model="searchField"
           class="w-25"
           label="Где?"
           hide-details="auto"
@@ -197,14 +260,14 @@ function deleteItem() {
         class="group-filter w-25 d-flex justify-end"
       >
         <v-btn
-          v-model="linkStore.currentSortDir"
+          v-model="currentSortDir"
           hide-details="auto"
           variant="plain"
-          :icon="linkStore.currentSortDir == 'desc' ? 'mdi-arrow-down-thin': 'mdi-arrow-up-thin'"
-          @click="(linkStore.currentSortDir == 'desc'
-                    ? linkStore.currentSortDir = 'asc'
-                    : linkStore.currentSortDir = 'desc');
-                  linkStore.fetchLinks(true)"
+          :icon="currentSortDir == 'desc' ? 'mdi-arrow-down-thin': 'mdi-arrow-up-thin'"
+          @click="(currentSortDir == 'desc'
+                    ? currentSortDir = 'asc'
+                    : currentSortDir = 'desc');
+                  fetchLinks(true)"
         >
           <v-icon />
           <v-tooltip
@@ -215,17 +278,17 @@ function deleteItem() {
           </v-tooltip>
         </v-btn>
         <v-select
-          v-model="linkStore.currentOrder"
+          v-model="currentOrder"
           label="Сортировка"
           hide-details="auto"
           :items="sortOrders"
           max-width="140"
           variant="solo-filled"
           density="comfortable"
-          @update:model-value="linkStore.fetchLinks(true)"
+          @update:model-value="fetchLinks(true)"
         />
         <v-select
-          v-model="linkStore.showingGroups"
+          v-model="showingGroups"
           label="Группы"
           placeholder="Все"
           hide-details="auto"
@@ -236,7 +299,7 @@ function deleteItem() {
           max-width="200"
           variant="solo-filled"
           density="comfortable"
-          @focusin="showingGroupsBeforeFocus = linkStore.showingGroups"
+          @focusin="showingGroupsBeforeFocus = showingGroups"
           @focusout="filterByGroups"
         >
           <template #selection="{item, index}">
@@ -251,7 +314,7 @@ function deleteItem() {
               v-else-if="index === 1"
               class="text-grey text-caption align-self-center"
             >
-              (+{{ linkStore.showingGroups?.length - 1 }})
+              (+{{ showingGroups?.length - 1 }})
             </span>
           </template>
         </v-select>
@@ -260,7 +323,7 @@ function deleteItem() {
     <v-card-text class="d-flex flex-column flex-grow-1">
       <v-expansion-panels class="mb-4">
         <div
-          v-for="link in linkStore.links"
+          v-for="link in links"
           :key="link.id"
           class="links w-100"
         >
@@ -385,11 +448,11 @@ function deleteItem() {
           </v-expansion-panel>
         </div>
         <v-progress-circular
-          v-if="(groupStore.isLoading || linkStore.isLoading) && !linkStore.links"
+          v-if="(groupStore.isLoading || isLoading) && !links"
           indeterminate
         />
         <h3
-          v-else-if="!linkStore.links?.length"
+          v-else-if="!links?.length"
           class="text-gray font-weight-light"
         >
           Ничего не найдено
@@ -397,12 +460,12 @@ function deleteItem() {
       </v-expansion-panels>
       <v-spacer />
       <v-pagination
-        v-model="linkStore.currentPage"
-        :length="linkStore.totalPages"
+        v-model="currentPage"
+        :length="totalPages"
         :total-visible="6"
         rounded="circle"
         class="bg-none"
-        @update:model-value="linkStore.fetchLinks(false)"
+        @update:model-value="fetchLinks(false)"
       />
     </v-card-text>
     <v-dialog
@@ -448,13 +511,30 @@ function deleteItem() {
         </v-card-text>
       </v-card>
     </v-dialog>
-    <DeleteModal
+    <v-dialog
       v-model="deleteDialog"
-      :selected-id="selectedLinkId"
-      :selected-model="'links'"
-      @close-modal="deleteDialog = false; selectedLinkId = -1;"
-      @delete-item="deleteItem"
-    />
+      max-width="400"
+      scrim="black"
+    >
+      <v-card>
+        <v-card-title>Уверены?</v-card-title>
+        <v-card-text>Вы точно хотите удалить ссылку?</v-card-text>
+        <v-card-actions>
+          <v-btn
+            variant="text"
+            @click="deleteLink(selectedLinkId)"
+          >
+            Да
+          </v-btn>
+          <v-btn
+            variant="text"
+            @click="deleteDialog = false"
+          >
+            Нет
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <StatisticModal
       v-model="statisticDialog"
       :link-id="selectedLinkId"

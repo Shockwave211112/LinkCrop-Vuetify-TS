@@ -117,7 +117,6 @@ async function fetchLinkInfo() {
       :disabled="loading"
     >
       <template #loader="{ isActive }">
-        <!--          Почему то без v-if loading не исчезает.. TODO:убрать v-if отсюда-->
         <v-progress-linear
           v-if="loading"
           :active="isActive"

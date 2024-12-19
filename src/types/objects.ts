@@ -16,7 +16,9 @@ export interface User {
   id: number,
   email: string,
   name: string,
-  roles: object[],
+  roles?: object[],
+  created_at: string,
+  email_verified_at: string,
 }
 
 export interface Link {

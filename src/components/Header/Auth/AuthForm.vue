@@ -74,6 +74,7 @@ async function getOauthLink(provider: string = 'google') {
         <v-text-field
           v-model="password"
           type="password"
+          autocomplete="off"
           variant="outlined"
           label="Пароль"
           hide-details="auto"
