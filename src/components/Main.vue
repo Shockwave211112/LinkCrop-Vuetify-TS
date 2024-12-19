@@ -199,6 +199,6 @@
 
 main {
   background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px) brightness(60%);
 }
 </style>

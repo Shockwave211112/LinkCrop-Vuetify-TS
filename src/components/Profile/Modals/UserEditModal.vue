@@ -5,7 +5,7 @@ import { Line } from 'vue-chartjs';
 import {formatDate} from "@/utils/formatters";
 import type {Statistic} from "@/types/responses";
 
-import type {NotifyFunction, User} from "@/types/objects";
+import type {Link, NotifyFunction, User} from "@/types/objects";
 const notify = inject('notify') as NotifyFunction;
 
 import {
@@ -27,7 +27,7 @@ const loading = ref<boolean>(true);
 const props =  defineProps({
   userId: ref<number>(-1),
 });
-const emit = defineEmits(['close-modal', 'delete-item']);
+const emit = defineEmits(['close-modal', 'delete-item', 'update-item']);
 const user = reactive<User>({});
 const emailVerified = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
@@ -63,6 +63,24 @@ async function fetchUserInfo() {
     }).finally(() => {
       loading.value = false;
     })
+}
+
+async function save() {
+  const isValid = await v$.value.$validate();
+  if (!isValid) {
+    notify("Проверьте данные в полях!", 'warning');
+    return
+  }
+
+  await apiClient.patch('/user/' + props.userId, {
+    'name': user.name,
+    'email': user.email,
+  }).then((response) => {
+    emit('update-item');
+    notify(response.data.message, 'success');
+  }).catch(({response}) => {
+    notify(response.data.message, 'error');
+  })
 }
 </script>
 
@@ -139,14 +157,16 @@ async function fetchUserInfo() {
       <v-card-actions>
         <v-btn
           prepend-icon="mdi-content-save"
-          class="bg-success"
-          @click="save(validate, link)"
+          class="text-success"
+          variant="tonal"
+          @click="save"
         >
           Сохранить
         </v-btn>
         <v-btn
           prepend-icon="mdi-trash-can-outline"
-          class="bg-error mr-3"
+          class="text-error mr-3"
+          variant="tonal"
           @click="deleteDialog = true"
         >
           Удалить

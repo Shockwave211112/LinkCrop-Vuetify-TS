@@ -116,7 +116,8 @@ function editUser(id: number) {
     v-model="editUserDialog"
     :user-id="selectedUser"
     @close-modal="editUserDialog = false; selectedUser = -1"
-    @delete-item="editUserDialog = false; selectedUser = -1; fetchUsers(true);"
+    @update-item="fetchUsers(true);"
+    @delete-item="editUserDialog = false; selectedUser = -1; fetchUsers(true)"
   />
 </template>
 
