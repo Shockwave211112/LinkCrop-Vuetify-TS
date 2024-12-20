@@ -14,8 +14,4 @@ import Footer from "@/components/Footer.vue";
 </script>
 
 <style scoped>
-div {
-  background-image: url("src/assets/imgs/patterns.jpg");
-  background-size: auto;
-}
 </style>

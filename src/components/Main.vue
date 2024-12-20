@@ -184,21 +184,21 @@
 
 <style scoped>
 .list-item {
-  transition: all 0.3s ease; /* Плавная анимация для карточки */
-  background-color: rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  background-color: rgba(var(--v-theme-primary), 0.7);
   border: 1px solid transparent;
 }
 
 .list-item:hover {
-  transform: scale(1.05); /* Увеличиваем текст */
-  transition: all 0.3s ease; /* Плавная анимация для текста */
+  transform: scale(1.05);
+  transition: all 0.3s ease;
   z-index: 30;
-  background-color: rgba(var(--v-theme-secondary), 1);
+  background-color: rgba(var(--v-theme-primary), 1);
   border: 1px solid rgb(var(--v-theme-accent));
 }
 
 main {
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px) brightness(60%);
+  background-color: rgba(var(--v-theme-secondary), 0.2);
+  backdrop-filter: blur(10px) brightness(90%);
 }
 </style>

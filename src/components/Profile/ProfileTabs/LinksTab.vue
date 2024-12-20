@@ -260,13 +260,15 @@ function deleteItem() {
       </div>
     </v-card-title>
     <v-card-text class="d-flex flex-column flex-grow-1">
-      <v-expansion-panels class="mb-4">
+      <v-expansion-panels
+        class="mb-4"
+      >
         <div
           v-for="link in linkStore.links"
           :key="link.id"
           class="links w-100"
         >
-          <v-expansion-panel>
+          <v-expansion-panel class="ma-1">
             <v-expansion-panel-title>
               <v-row
                 no-gutters
@@ -471,6 +473,6 @@ function deleteItem() {
 }
 
 .links-list {
-  background-color: rgba(var(--v-theme-secondary), 0.9);
+  background-color: rgba(var(--v-theme-secondary), 70%);
 }
 </style>

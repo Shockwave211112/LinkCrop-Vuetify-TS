@@ -113,7 +113,7 @@ function changeSort(sortBy: object[]) {
         indeterminate
       />
     </template>
-    <div class="d-flex w-100 justify-space-around">
+    <div class="d-flex w-100 justify-space-around ma-2">
       <div class="d-flex w-25">
         <v-text-field
           v-model="searchQuery"

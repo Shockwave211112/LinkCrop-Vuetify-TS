@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const date = new Date().getFullYear();
+const apiLink = import.meta.env.VITE_API_URL + '/api/docs';
 </script>
 
 <template>
@@ -11,8 +12,17 @@ const date = new Date().getFullYear();
         target="_blank"
       >superdesigner.co</a>
     </div>
-    <div class="rights align-right">
-      LinkCrop © {{ date }}<br>Все права защищены
+    <div class="d-flex align-center">
+      <div class="pr-5">
+        <a
+          class="text-decoration-none"
+          :href="apiLink"
+          target="_blank"
+        >API</a>
+      </div>
+      <div class="rights align-right">
+        LinkCrop © {{ date }}<br>Все права защищены
+      </div>
     </div>
   </footer>
 </template>

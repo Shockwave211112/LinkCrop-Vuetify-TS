@@ -251,7 +251,7 @@ function deleteItem() {
           :key="group.id"
           class="groups w-100"
         >
-          <v-expansion-panel>
+          <v-expansion-panel class="ma-1">
             <v-expansion-panel-title>
               <v-row
                 no-gutters
@@ -403,6 +403,6 @@ function deleteItem() {
 }
 
 .groups-list {
-  background-color: rgba(var(--v-theme-secondary), 0.9);
+  background-color: rgba(var(--v-theme-secondary), 70%);
 }
 </style>
