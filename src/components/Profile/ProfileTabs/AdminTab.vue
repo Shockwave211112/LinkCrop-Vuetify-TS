@@ -4,6 +4,7 @@ import {ref} from "vue";
 import LinksTab from "@/components/Profile/Admin/LinksTab.vue";
 import UsersTab from "@/components/Profile/Admin/UsersTab.vue";
 import GroupsTab from "@/components/Profile/Admin/GroupsTab.vue";
+import PermissionsTab from "@/components/Profile/Admin/PermissionsTab.vue";
 
 const tab = ref<string>('users');
 </script>
@@ -29,6 +30,11 @@ const tab = ref<string>('users');
       text="Группы"
       value="groups"
     />
+    <v-tab
+      prepend-icon="mdi-group"
+      text="Права"
+      value="permissions"
+    />
   </v-tabs>
   <v-tabs-window
     v-model="tab"
@@ -51,6 +57,12 @@ const tab = ref<string>('users');
       class="tab-item"
     >
       <GroupsTab />
+    </v-tabs-window-item>
+    <v-tabs-window-item
+      value="permissions"
+      class="tab-item"
+    >
+      <PermissionsTab />
     </v-tabs-window-item>
   </v-tabs-window>
 </template>

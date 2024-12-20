@@ -35,7 +35,7 @@ onMounted(() => {
       />
       <v-tab
         v-show="user?.roles.includes('admin')"
-        prepend-icon="mdi-account-group-outline"
+        prepend-icon="mdi-cogs"
         text="Админка"
         value="admin"
       />
