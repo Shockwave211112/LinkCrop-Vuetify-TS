@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {inject, reactive, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import {apiClient} from "@/plugins/axios";
 import { Line } from 'vue-chartjs';
 import {formatDate} from "@/utils/formatters";
@@ -19,6 +19,7 @@ import {
   Legend,
   Filler
 } from 'chart.js'
+import {useTheme} from "vuetify";
 
 ChartJS.register(
   CategoryScale,
@@ -30,6 +31,11 @@ ChartJS.register(
   Legend,
   Filler
 )
+
+function getThemeColor(variable) {
+  const rootStyle = getComputedStyle(document.documentElement);
+  return rootStyle.getPropertyValue(variable).trim();
+}
 
 const isLoading = ref<boolean>(true);
 const props =  defineProps({
@@ -45,22 +51,22 @@ const graphOptions = ref<object>({
   scales: {
     x: {
       ticks: {
-        color: 'white'  // Цвет подписей на оси X
+        color: computed(() => `rgb(${getThemeColor('--v-theme-on-primary')})`) // Цвет подписей оси X
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)'  // Цвет сетки оси X (белый с прозрачностью)
+        color: computed(() => `rgba(${getThemeColor('--v-theme-on-primary')}, 0.1)`) // Сетка оси X
       }
     },
     y: {
       ticks: {
-        color: 'white'  // Цвет подписей на оси Y
+        color: computed(() => `rgb(${getThemeColor('--v-theme-on-primary')})`) // Цвет подписей оси Y
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)'  // Цвет сетки оси Y (белый с прозрачностью)
+        color: computed(() => `rgba(${getThemeColor('--v-theme-on-primary')}, 0.1)`) // Сетка оси Y
       }
     }
   }
-})
+});
 
 function clearData() {
   labels.value = [];
@@ -84,12 +90,12 @@ async function fetchLinkInfo() {
         datasets: [{
           label: 'Переходы',
           fill: true,  // Включаем заливку под графиком
-          borderColor: 'rgb(0, 255, 255)',  // Цвет линии графика (циановый)
-          backgroundColor: 'rgba(0, 255, 255, 0.2)',  // Полупрозрачный циановый цвет под графиком
-          pointBackgroundColor: 'rgb(0, 255, 255)',  // Цвет точек (циановый)
-          pointBorderColor: 'rgb(0, 255, 255)',  // Цвет границ точек (циановый)
-          pointHoverBackgroundColor: 'rgb(0, 255, 255)',  // Цвет точек при наведении
-          pointHoverBorderColor: 'rgb(0, 255, 255)',  // Цвет границ точек при наведении
+          borderColor: `rgb(${getThemeColor('--v-theme-accent')})`,  // Цвет линии графика (циановый)
+          backgroundColor: `rgba(${getThemeColor('--v-theme-accent')}, 0.2)`,  // Полупрозрачный циановый цвет под графиком
+          pointBackgroundColor: `rgb(${getThemeColor('--v-theme-accent')})`,  // Цвет точек (циановый)
+          pointBorderColor: `rgb(${getThemeColor('--v-theme-accent')})`,  // Цвет границ точек (циановый)
+          pointHoverBackgroundColor: `rgb(${getThemeColor('--v-theme-accent')})`,  // Цвет точек при наведении
+          pointHoverBorderColor: `rgb(${getThemeColor('--v-theme-accent')})`,  // Цвет границ точек при наведении
           tension: 0.4,  // Для плавного графика (значение от 0 до 1)
           radius: 5,  // Размер точек
           borderWidth: 2,
