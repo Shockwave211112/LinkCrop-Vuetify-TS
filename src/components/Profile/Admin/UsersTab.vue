@@ -1,38 +1,50 @@
 <script setup lang="ts">
 import UserEditModal from "@/components/Profile/Modals/UserEditModal.vue";
-import type {NotifyFunction} from "@/types/objects";
-import {inject, onMounted, ref} from "vue";
+import type {NotifyFunction, User} from "@/types/objects";
+import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
+import {formatDate} from "@/utils/formatters";
 
 const notify = inject('notify') as NotifyFunction;
 const isLoading = ref<boolean>(true);
 
-const users = ref<Users[]>([]);
-const totalPages = ref<number>(1);
+const users = ref<User[]>([]);
+const headers: object[] = [
+    { title: 'ID', value: 'id', sortable: true },
+    { title: 'Имя', value: 'name', sortable: true },
+    { title: 'Email', value: 'email', sortable: true },
+    { title: 'Дата регистрации', value: 'created_at', sortable: true },
+];
+
 const currentPage = ref<number>(1);
+const totalItems = ref<number>(-1);
+const perPage = ref<number>(10);
 
 const searchQuery = ref<string>('');
 const debounceTimer = ref<number | null>(null);
 const searchField = ref<string>('name');
 const searchFields: object[] = [
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Количество ссылок', value: 'count'},
+  {title: 'Имя', value: 'name'},
+  {title: 'Email', value: 'email'},
+  {title: 'ID', value: 'id'},
 ];
 
 const currentOrder = ref<string>('id');
 const currentSortDir = ref<string>('desc');
-const sortOrders: object[] = [
-  {title: 'ID', value: 'id'},
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Количество ссылок', value: 'count'},
-];
 
-const editUserDialog = ref<boolean>(false);
+const editDialog = ref<boolean>(false);
 const selectedUser = ref<number>(-1);
 
-async function fetchUsers(withFilters: boolean = false) {
+watch(searchQuery, () => {
+  if (debounceTimer.value) {
+    clearTimeout(debounceTimer.value);
+  }
+  debounceTimer.value = setTimeout(() => {
+    fetch();
+  }, 700);
+});
+
+async function fetch() {
   const params: {
     page: number,
     orderBy: string,
@@ -40,24 +52,25 @@ async function fetchUsers(withFilters: boolean = false) {
     search?: string,
     searchBy?: string,
     groups?: number[],
+    perPage?: number,
   } = {
     page: currentPage.value,
     orderBy: currentOrder.value,
     dir: currentSortDir.value,
+    perPage: perPage.value,
   };
 
-  if(withFilters) {
-    if(searchQuery.value) {
-      params.search = searchQuery.value;
-      params.searchBy = searchField.value;
-    }
+  if(searchQuery.value) {
+    params.search = searchQuery.value;
+    params.searchBy = searchField.value;
   }
+
   isLoading.value = true;
 
   await apiClient.get(`/user`, {params})
     .then(({data}) => {
       users.value = data.data;
-      totalPages.value = data.last_page;
+      totalItems.value = data.total;
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
@@ -66,12 +79,23 @@ async function fetchUsers(withFilters: boolean = false) {
 }
 
 onMounted(() => {
-  fetchUsers();
+  fetch();
 })
 
-function editUser(id: number) {
+function edit(id: number) {
   selectedUser.value = id;
-  editUserDialog.value = true;
+  editDialog.value = true;
+}
+
+function changeSort(sortBy: object[]) {
+  if(sortBy.length) {
+    currentOrder.value = sortBy[0]['key'];
+    currentSortDir.value = sortBy[0]['order'];
+  }
+  else {
+    currentOrder.value = 'id';
+    currentSortDir.value = 'desc';
+  }
 }
 </script>
 
@@ -87,37 +111,60 @@ function editUser(id: number) {
         indeterminate
       />
     </template>
-    <v-table
+    <div class="d-flex w-100 justify-space-around">
+      <div class="d-flex w-25">
+        <v-text-field
+          v-model="searchQuery"
+          class="w-75"
+          label="Поиск"
+          prepend-inner-icon="mdi-magnify"
+          hide-details="auto"
+          variant="solo-filled"
+          density="comfortable"
+          clearable
+        />
+        <v-select
+          v-model="searchField"
+          class="w-25"
+          label="Где?"
+          hide-details="auto"
+          :items="searchFields"
+          variant="solo-filled"
+          density="comfortable"
+          @update:model-value="fetch"
+        />
+      </div>
+    </div>
+    <v-data-table-server
+      v-model:page="currentPage"
+      v-model:items-per-page="perPage"
       hover
+      :headers="headers"
+      :items="users"
+      :items-length="totalItems"
+      @update:sort-by="changeSort"
+      @update:options="fetch"
     >
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Имя</th>
-          <th>Email</th>
-          <th>Дата регистрации</th>
-        </tr>
-      </thead>
-      <tbody>
+      <template #body="{ items }">
         <tr
-          v-for="user in users"
-          :key="user.id"
-          @click="editUser(user.id)"
+          v-for="item in items"
+          :key="item.id"
+          @click="edit(item.id)"
         >
-          <td>{{ user.id }}</td>
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.created_at }}</td>
+          <td>{{ item.id }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ formatDate(item.created_at) }}</td>
         </tr>
-      </tbody>
-    </v-table>
+      </template>
+    </v-data-table-server>
   </v-card>
   <UserEditModal
-    v-model="editUserDialog"
+    v-model="editDialog"
     :user-id="selectedUser"
-    @close-modal="editUserDialog = false; selectedUser = -1"
-    @update-item="fetchUsers(true);"
-    @delete-item="editUserDialog = false; selectedUser = -1; fetchUsers(true)"
+    @close-modal="editDialog = false; selectedUser = -1"
+    @update-item="fetch"
+    @delete-item="editDialog = false; selectedUser = -1; fetch"
   />
 </template>
 

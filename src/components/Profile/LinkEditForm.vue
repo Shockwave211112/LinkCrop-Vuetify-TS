@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {Group, Link} from "@/types/objects";
-import {inject, reactive} from "vue";
+import {inject, reactive, ref} from "vue";
 import {required} from "@vuelidate/validators";
 import {useVuelidate} from "@vuelidate/core";
 
@@ -21,6 +21,7 @@ const props =  defineProps({
     updated_at: Date(),
     groups: [],
   }),
+  editGroups: ref<boolean>(true),
 })
 
 const rules = {
@@ -65,6 +66,7 @@ async function validateLinkForm() {
         variant="outlined"
         multiple
         chips
+        :disabled="props.editGroups == false"
         label="Группы"
       />
       <v-date-input

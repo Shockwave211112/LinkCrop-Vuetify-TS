@@ -3,6 +3,7 @@
 import {ref} from "vue";
 import LinksTab from "@/components/Profile/Admin/LinksTab.vue";
 import UsersTab from "@/components/Profile/Admin/UsersTab.vue";
+import GroupsTab from "@/components/Profile/Admin/GroupsTab.vue";
 
 const tab = ref<string>('users');
 </script>
@@ -42,11 +43,15 @@ const tab = ref<string>('users');
     <v-tabs-window-item
       value="links"
       class="tab-item"
-    />
+    >
+      <LinksTab />
+    </v-tabs-window-item>
     <v-tabs-window-item
       value="groups"
       class="tab-item"
-    />
+    >
+      <GroupsTab />
+    </v-tabs-window-item>
   </v-tabs-window>
 </template>
 

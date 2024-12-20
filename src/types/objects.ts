@@ -29,7 +29,8 @@ export interface Link {
   referral: string,
   updated_at: string,
   created_at: string,
-  groups: number[],
+  groups?: number[]|Group[],
+  users?: User[],
 }
 
 export interface Group {
@@ -39,4 +40,6 @@ export interface Group {
   count: number,
   updated_at: string,
   created_at: string,
+  links?: Link[],
+  users?: User[],
 }

@@ -1,24 +1,9 @@
 <script setup lang="ts">
 import {inject, reactive, ref} from "vue";
 import {apiClient} from "@/plugins/axios";
-import { Line } from 'vue-chartjs';
-import {formatDate} from "@/utils/formatters";
-import type {Statistic} from "@/types/responses";
 
-import type {Link, NotifyFunction, User} from "@/types/objects";
+import type {NotifyFunction, User} from "@/types/objects";
 const notify = inject('notify') as NotifyFunction;
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js'
 import {email, required} from "@vuelidate/validators";
 import {useVuelidate} from "@vuelidate/core";
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
@@ -139,7 +124,7 @@ async function save() {
             />
             <v-checkbox
               v-model="emailVerified"
-              label="Email подтверждён"
+              :label="'Email' + (emailVerified ? '' : ' не') + ' подтверждён'"
               disabled
               false-icon="mdi-close"
             />
@@ -156,20 +141,20 @@ async function save() {
       </v-card-text>
       <v-card-actions>
         <v-btn
-          prepend-icon="mdi-content-save"
-          class="text-success"
-          variant="tonal"
-          @click="save"
-        >
-          Сохранить
-        </v-btn>
-        <v-btn
           prepend-icon="mdi-trash-can-outline"
-          class="text-error mr-3"
+          class="text-error"
           variant="tonal"
           @click="deleteDialog = true"
         >
           Удалить
+        </v-btn>
+        <v-btn
+          prepend-icon="mdi-content-save"
+          class="text-success mr-3"
+          variant="tonal"
+          @click="save"
+        >
+          Сохранить
         </v-btn>
       </v-card-actions>
     </v-card>

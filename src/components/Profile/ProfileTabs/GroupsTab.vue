@@ -211,6 +211,7 @@ function deleteItem() {
           :items="searchFields"
           variant="solo-filled"
           density="comfortable"
+          @update:model-value="fetchGroups(true)"
         />
       </div>
       <div

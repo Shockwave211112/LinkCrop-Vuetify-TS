@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import StatisticModal from "@/components/Profile/Modals/StatisticModal.vue";
 import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
-import {inject, onMounted, reactive, ref, watch} from "vue";
+import {inject, onMounted, reactive, ref} from "vue";
 import { useGroupStore } from "@/store/groups";
 import { apiClient }  from "@/plugins/axios";
 import type { Link, NotifyFunction } from "@/types/objects";
@@ -191,6 +191,7 @@ function deleteItem() {
           :items="searchFields"
           variant="solo-filled"
           density="comfortable"
+          @update:model-value="linkStore.fetchLinks(true)"
         />
       </div>
       <div

@@ -3,18 +3,17 @@ import type {Link, NotifyFunction} from "@/types/objects";
 import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
 import {formatDate} from "@/utils/formatters";
-import LinkEditModal from "@/components/Profile/Modals/LinkEditModal.vue";
+import GroupEditModal from "@/components/Profile/Modals/GroupEditModal.vue";
 
 const notify = inject('notify') as NotifyFunction;
 const isLoading = ref<boolean>(true);
 
-const links = ref<Link[]>([]);
+const groups = ref<Link[]>([]);
 const headers: object[] = [
   { title: 'ID', value: 'id', sortable: true },
   { title: 'Название', value: 'name', sortable: true },
   { title: 'Описание', value: 'description', sortable: true },
-  { title: 'Эндпоинт', value: 'referral', sortable: true },
-  { title: 'ID групп', value: 'groups', sortable: false },
+  { title: 'Количество ссылок', value: 'count', sortable: true },
   { title: 'ID пользователей', value: 'users', sortable: false },
   { title: 'Дата создания', value: 'created_at', sortable: true },
 ];
@@ -29,8 +28,7 @@ const searchField = ref<string>('name');
 const searchFields: object[] = [
   {title: 'Название', value: 'name'},
   {title: 'Описание', value: 'description'},
-  {title: 'Куда', value: 'origin'},
-  {title: 'Эндпоинт', value: 'referral'},
+  {title: 'Количество ссылок', value: 'count'},
 ];
 
 const currentOrder = ref<string>('id');
@@ -71,9 +69,9 @@ async function fetch() {
 
   isLoading.value = true;
 
-  await apiClient.get(`/admin/links`, {params})
+  await apiClient.get(`/admin/groups`, {params})
     .then(({data}) => {
-      links.value = data.data;
+      groups.value = data.data;
       totalItems.value = data.total;
     }).catch(({response}) => {
       notify(response.data.message, 'error');
@@ -144,7 +142,7 @@ function changeSort(sortBy: object[]) {
       v-model:items-per-page="perPage"
       hover
       :headers="headers"
-      :items="links"
+      :items="groups"
       :items-length="totalItems"
       @update:sort-by="changeSort"
       @update:options="fetch"
@@ -158,15 +156,7 @@ function changeSort(sortBy: object[]) {
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
-          <td>{{ item.referral }}</td>
-          <td>
-            <v-chip
-              v-for="group in item.groups"
-              :key="group.id"
-            >
-              {{ group.id }}
-            </v-chip>
-          </td>
+          <td>{{ item.count }}</td>
           <td>
             <v-chip
               v-for="user in item.users"
@@ -180,9 +170,9 @@ function changeSort(sortBy: object[]) {
       </template>
     </v-data-table-server>
   </v-card>
-  <LinkEditModal
+  <GroupEditModal
     v-model="editDialog"
-    :link-id="selectedId"
+    :group-id="selectedId"
     @close-modal="editDialog = false; selectedId = -1"
     @update-item="fetch"
     @delete-item="editDialog = false; selectedId = -1; fetch"
