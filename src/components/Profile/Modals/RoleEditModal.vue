@@ -5,7 +5,7 @@ import {apiClient} from "@/plugins/axios";
 import type {NotifyFunction, Permission, User} from "@/types/objects";
 const notify = inject('notify') as NotifyFunction;
 
-const loading = ref<boolean>(true);
+const isLoading = ref<boolean>(true);
 const props =  defineProps({
   role: ref<number>(-1),
 });
@@ -28,7 +28,7 @@ async function fetchAllPermissions() {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 
@@ -42,7 +42,7 @@ async function save() {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 
@@ -67,8 +67,8 @@ function toggleAllPermissions(): void {
     @after-leave="clearData"
   >
     <v-card
-      :loading="loading"
-      :disabled="loading"
+      :loading="isLoading"
+      :disabled="isLoading"
     >
       <template #loader="{ isActive }">
         <v-progress-linear
@@ -87,7 +87,7 @@ function toggleAllPermissions(): void {
       </v-card-title>
       <v-card-text class="d-flex align-center justify-center">
         <v-progress-circular
-          v-if="loading"
+          v-if="isLoading"
           indeterminate
         />
         <div

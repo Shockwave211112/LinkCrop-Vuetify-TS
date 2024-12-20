@@ -17,7 +17,7 @@ const groupStore = useGroupStore();
 const createDialog = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
 const statisticDialog = ref<boolean>(false);
-const selectedLinkId = ref<number>(-1);
+const selecetedId = ref<number>(-1);
 const showingGroupsBeforeFocus = ref<number[]>([]);
 
 const searchFields: object[] = [
@@ -26,6 +26,7 @@ const searchFields: object[] = [
   {title: 'Куда', value: 'origin'},
   {title: 'Эндпоинт', value: 'referral'},
 ];
+
 const sortOrders: object[] = [
   {title: 'ID', value: 'id'},
   {title: 'Название', value: 'name'},
@@ -115,7 +116,7 @@ async function save(validate, link: Link) {
 }
 
 function openDialog(id: number, type: string) {
-  selectedLinkId.value = id;
+  selecetedId.value = id;
 
   switch(type) {
     case 'delete':
@@ -128,7 +129,7 @@ function openDialog(id: number, type: string) {
 }
 
 function deleteItem() {
-  selectedLinkId.value = -1;
+  selecetedId.value = -1;
   deleteDialog.value = false;
   linkStore.fetchLinks(true);
 }
@@ -451,14 +452,14 @@ function deleteItem() {
     </v-dialog>
     <DeleteModal
       v-model="deleteDialog"
-      :selected-id="selectedLinkId"
+      :selected-id="selecetedId"
       :selected-model="'links'"
-      @close-modal="deleteDialog = false; selectedLinkId = -1;"
+      @close-modal="deleteDialog = false; selecetedId = -1;"
       @delete-item="deleteItem"
     />
     <StatisticModal
       v-model="statisticDialog"
-      :link-id="selectedLinkId"
+      :link-id="selecetedId"
       @close-stat="statisticDialog = false"
     />
   </v-card>

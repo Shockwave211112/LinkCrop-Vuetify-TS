@@ -164,7 +164,7 @@ function changeSort(sortBy: object[]) {
     :user-id="selectedUser"
     @close-modal="editDialog = false; selectedUser = -1"
     @update-item="fetch"
-    @delete-item="editDialog = false; selectedUser = -1; fetch"
+    @delete-item="editDialog = false; selectedUser = -1; fetch()"
   />
 </template>
 

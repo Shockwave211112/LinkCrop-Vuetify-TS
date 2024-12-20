@@ -31,7 +31,7 @@ ChartJS.register(
   Filler
 )
 
-const loading = ref<boolean>(true);
+const isLoading = ref<boolean>(true);
 const props =  defineProps({
   linkId: ref<number>(-1),
 });
@@ -66,7 +66,7 @@ function clearData() {
   labels.value = [];
   hits.value = [];
   graphData.value = {};
-  loading.value = true;
+  isLoading.value = true;
 }
 
 async function fetchLinkInfo() {
@@ -99,7 +99,7 @@ async function fetchLinkInfo() {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 </script>
@@ -113,12 +113,12 @@ async function fetchLinkInfo() {
     @after-leave="clearData"
   >
     <v-card
-      :loading="loading"
-      :disabled="loading"
+      :loading="isLoading"
+      :disabled="isLoading"
     >
       <template #loader="{ isActive }">
         <v-progress-linear
-          v-if="loading"
+          v-if="isLoading"
           :active="isActive"
           color="accent"
           indeterminate
@@ -134,7 +134,7 @@ async function fetchLinkInfo() {
       </v-card-title>
       <v-card-text class="d-flex align-center justify-center">
         <v-progress-circular
-          v-if="loading"
+          v-if="isLoading"
           indeterminate
         />
         <div

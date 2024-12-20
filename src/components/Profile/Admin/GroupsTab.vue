@@ -175,7 +175,7 @@ function changeSort(sortBy: object[]) {
     :group-id="selectedId"
     @close-modal="editDialog = false; selectedId = -1"
     @update-item="fetch"
-    @delete-item="editDialog = false; selectedId = -1; fetch"
+    @delete-item="editDialog = false; selectedId = -1; fetch()"
   />
 </template>
 

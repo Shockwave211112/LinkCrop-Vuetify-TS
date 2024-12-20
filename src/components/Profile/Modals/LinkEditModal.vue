@@ -10,7 +10,7 @@ import StatisticModal from "@/components/Profile/Modals/StatisticModal.vue";
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
 
-const loading = ref<boolean>(true);
+const isLoading = ref<boolean>(true);
 
 const props =  defineProps({
   linkId: ref<number>(-1),
@@ -34,7 +34,7 @@ async function fetchLinkInfo() {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 
@@ -71,11 +71,11 @@ function copyReferral(referral: string) {
     min-height="200"
     scrim="black"
     @after-enter="fetchLinkInfo"
-    @after-leave="loading = true"
+    @after-leave="isLoading = true"
   >
     <v-card
-      :loading="loading"
-      :disabled="loading"
+      :loading="isLoading"
+      :disabled="isLoading"
     >
       <template #loader="{ isActive }">
         <v-progress-linear
@@ -94,7 +94,7 @@ function copyReferral(referral: string) {
       </v-card-title>
       <v-card-text class="d-flex align-center justify-center">
         <v-progress-circular
-          v-if="loading"
+          v-if="isLoading"
           indeterminate
         />
         <div

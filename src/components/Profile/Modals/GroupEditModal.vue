@@ -8,7 +8,7 @@ const notify = inject('notify') as NotifyFunction;
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 import GroupEditForm from "@/components/Profile/GroupEditForm.vue";
 
-const loading = ref<boolean>(true);
+const isLoading = ref<boolean>(true);
 
 const props =  defineProps({
   groupId: ref<number>(-1),
@@ -31,7 +31,7 @@ async function fetchLinkInfo() {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 
@@ -58,11 +58,11 @@ async function save(validate) {
     min-height="200"
     scrim="black"
     @after-enter="fetchLinkInfo"
-    @after-leave="loading = true"
+    @after-leave="isLoading = true"
   >
     <v-card
-      :loading="loading"
-      :disabled="loading"
+      :loading="isLoading"
+      :disabled="isLoading"
     >
       <template #loader="{ isActive }">
         <v-progress-linear
@@ -81,7 +81,7 @@ async function save(validate) {
       </v-card-title>
       <v-card-text class="d-flex align-center justify-center">
         <v-progress-circular
-          v-if="loading"
+          v-if="isLoading"
           indeterminate
         />
         <div

@@ -8,7 +8,7 @@ import {email, required} from "@vuelidate/validators";
 import {useVuelidate} from "@vuelidate/core";
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 
-const loading = ref<boolean>(true);
+const isLoading = ref<boolean>(true);
 const props =  defineProps({
   userId: ref<number>(-1),
 });
@@ -31,7 +31,7 @@ function clearData() {
   user.email = '';
   user.email_verified_at = '';
   user.created_at = '';
-  loading.value = true;
+  isLoading.value = true;
 }
 
 async function fetchUserInfo() {
@@ -46,7 +46,7 @@ async function fetchUserInfo() {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 
@@ -78,8 +78,8 @@ async function save() {
     @after-leave="clearData"
   >
     <v-card
-      :loading="loading"
-      :disabled="loading"
+      :loading="isLoading"
+      :disabled="isLoading"
     >
       <template #loader="{ isActive }">
         <v-progress-linear
@@ -98,7 +98,7 @@ async function save() {
       </v-card-title>
       <v-card-text class="d-flex align-center justify-center">
         <v-progress-circular
-          v-if="loading"
+          v-if="isLoading"
           indeterminate
         />
         <div

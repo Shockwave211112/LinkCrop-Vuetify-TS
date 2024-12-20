@@ -11,8 +11,8 @@ const notify = inject('notify') as NotifyFunction;
 const linkStore = useLinkStore();
 const createDialog = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
-const selectedGroupId = ref<number>(-1);
-const loading = ref<boolean>(false);
+const selecetedId = ref<number>(-1);
+const isLoading = ref<boolean>(false);
 
 const searchQuery = ref<string>('');
 const debounceTimer = ref<number | null>(null);
@@ -79,7 +79,7 @@ async function fetchGroups(withFilters: boolean = false) {
       params.searchBy = searchField.value;
     }
   }
-  loading.value = true;
+  isLoading.value = true;
 
   await apiClient.get(`/groups`, {params})
     .then(({data}) => {
@@ -88,7 +88,7 @@ async function fetchGroups(withFilters: boolean = false) {
     }).catch(({response}) => {
       notify(response.data.message, 'error');
     }).finally(() => {
-      loading.value = false;
+      isLoading.value = false;
     })
 }
 
@@ -139,7 +139,7 @@ async function save(validate, group: Group) {
 }
 
 function openDialog(id: number, type: string) {
-  selectedGroupId.value = id;
+  selecetedId.value = id;
 
   switch(type) {
     case 'delete':
@@ -149,7 +149,7 @@ function openDialog(id: number, type: string) {
 }
 
 function deleteItem() {
-  selectedGroupId.value = -1;
+  selecetedId.value = -1;
   deleteDialog.value = false;
   fetchGroups(true);
 }
@@ -158,8 +158,8 @@ function deleteItem() {
 <template>
   <v-card
     class="groups-list d-flex flex-column h-100"
-    :loading="loading"
-    :disabled="loading"
+    :loading="isLoading"
+    :disabled="isLoading"
   >
     <template #loader="{ isActive }">
       <v-progress-linear
@@ -325,7 +325,7 @@ function deleteItem() {
           </v-expansion-panel>
         </div>
         <v-progress-circular
-          v-if="loading && !groups.length"
+          v-if="isLoading && !groups.length"
           indeterminate
         />
         <h3
@@ -346,9 +346,9 @@ function deleteItem() {
     </v-card-text>
     <DeleteModal
       v-model="deleteDialog"
-      :selected-id="selectedGroupId"
+      :selected-id="selecetedId"
       :selected-model="'groups'"
-      @close-modal="deleteDialog = false; selectedGroupId = -1;"
+      @close-modal="deleteDialog = false; selecetedId = -1;"
       @delete-item="deleteItem"
     />
     <v-dialog
