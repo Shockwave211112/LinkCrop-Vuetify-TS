@@ -6,31 +6,31 @@ import {inject, onMounted} from "vue";
 import {useUserStore} from "@/store/user";
 import type {NotifyFunction} from "@/types/objects";
 import router from "@/router";
+import {useI18n} from "vue-i18n";
+import {deleteCookie, getCookie} from "@/utils/cookie";
 
+const { t } = useI18n();
 const user = useUserStore();
 const notify = inject('notify') as NotifyFunction;
 
 onMounted(() => {
-  const token: string = document.cookie
-      .split(';')
-      ?.find(item => item.startsWith(`token=`))
-      ?.split('=')[1]
-    ?? '';
+  const token: string = getCookie('token') ?? '';
 
   if(token) {
     try {
       localStorage.setItem('authToken', decodeURIComponent(token));
       user.login();
-      notify("Авторизация успешна!", 'success');
+      notify(t('messages.login'), 'success');
+      deleteCookie('token');
     }
     catch(error) {
       router.push('/');
-      notify("Произошла ошибка при авторизации.", 'error');
+      notify(t('errors.default'), 'error');
     }
   }
   else {
     router.push('/');
-    notify("Произошла ошибка при авторизации.", 'error');
+    notify(t('errors.default'), 'error');
   }
 })
 </script>

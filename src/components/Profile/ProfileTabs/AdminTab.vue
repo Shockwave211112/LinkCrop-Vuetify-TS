@@ -5,8 +5,10 @@ import LinksTab from "@/components/Profile/Admin/LinksTab.vue";
 import UsersTab from "@/components/Profile/Admin/UsersTab.vue";
 import GroupsTab from "@/components/Profile/Admin/GroupsTab.vue";
 import PermissionsTab from "@/components/Profile/Admin/PermissionsTab.vue";
+import {useI18n} from "vue-i18n";
 
 const tab = ref<string>('users');
+const { t } = useI18n();
 </script>
 
 <template>
@@ -17,22 +19,22 @@ const tab = ref<string>('users');
   >
     <v-tab
       prepend-icon="mdi-account-group"
-      text="Пользователи"
+      :text="t('profile.admin.tabs.users')"
       value="users"
     />
     <v-tab
       prepend-icon="mdi-link"
-      text="Ссылки"
+      :text="t('profile.admin.tabs.links')"
       value="links"
     />
     <v-tab
       prepend-icon="mdi-group"
-      text="Группы"
+      :text="t('profile.admin.tabs.groups')"
       value="groups"
     />
     <v-tab
       prepend-icon="mdi-group"
-      text="Права"
+      :text="t('profile.admin.tabs.permissions')"
       value="permissions"
     />
   </v-tabs>

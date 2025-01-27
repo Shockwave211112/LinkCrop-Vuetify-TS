@@ -7,9 +7,10 @@ const notify = inject('notify') as NotifyFunction;
 
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 import GroupEditForm from "@/components/Profile/GroupEditForm.vue";
+import {useI18n} from "vue-i18n";
 
+const { t } = useI18n();
 const isLoading = ref<boolean>(true);
-
 const props =  defineProps({
   groupId: ref<number>(-1),
 });
@@ -72,7 +73,7 @@ async function save(validate) {
         />
       </template>
       <v-card-title class="d-flex justify-space-between align-center">
-        Группа #{{ groupId }}
+        {{ t('profile.admin.forms.group') + ' #' + groupId }}
         <v-btn
           icon="mdi-close"
           size="small"
@@ -103,7 +104,7 @@ async function save(validate) {
                   activator="parent"
                   location="top"
                 >
-                  Удалить
+                  {{ t('profile.buttons.delete') }}
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -116,7 +117,7 @@ async function save(validate) {
                   activator="parent"
                   location="top"
                 >
-                  Сохранить
+                  {{ t('profile.buttons.save') }}
                 </v-tooltip>
               </v-btn>
             </template>

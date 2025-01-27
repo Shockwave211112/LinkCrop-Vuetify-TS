@@ -1,5 +1,20 @@
 <script setup lang="ts">
+import {useI18n} from "vue-i18n";
+import {useAppStore} from "@/store/app";
+import {useRouter} from "vue-router";
 
+const { t } = useI18n();
+const router = useRouter();
+const appStore = useAppStore();
+
+function start () {
+  if(localStorage.getItem('authToken') != null) {
+    router.push('/profile');
+  }
+  else {
+    appStore.toggleMenu(true)
+  }
+}
 </script>
 
 <template>
@@ -14,10 +29,10 @@
   >
     <v-container class="pa-4">
       <h1 class="pb-3">
-        Добро пожаловать в LinkCrop!
+        {{ t('index.welcome') }}
       </h1>
       <p class="font-weight-light">
-        Удобный способ сокращения и управления вашими ссылками.
+        {{ t('index.description') }}
       </p>
     </v-container>
 
@@ -25,7 +40,7 @@
 
     <v-container class="features">
       <h2 class="text-h4 font-weight-bold mb-4">
-        Наши преимущества
+        {{ t('index.advantages.header') }}
       </h2>
       <div class="list d-flex pl-10 pr-10">
         <v-card
@@ -40,10 +55,10 @@
             >
               mdi-scissors-cutting
             </v-icon>
-            Быстрота
+            {{ t('index.advantages.adv1.header') }}
           </v-card-title>
           <v-card-text class="font-weight-medium">
-            Сокращение ссылок за секунды.
+            {{ t('index.advantages.adv1.description') }}
           </v-card-text>
         </v-card>
         <v-card
@@ -58,10 +73,10 @@
             >
               mdi-format-list-group
             </v-icon>
-            Группировка
+            {{ t('index.advantages.adv2.header') }}
           </v-card-title>
           <v-card-text class="font-weight-medium">
-            Возможность создания и назначения групп для ссылок, а также фильтрация по ним.
+            {{ t('index.advantages.adv2.description') }}
           </v-card-text>
         </v-card>
         <v-card
@@ -76,10 +91,10 @@
             >
               mdi-chart-areaspline
             </v-icon>
-            Статистика
+            {{ t('index.advantages.adv3.header') }}
           </v-card-title>
           <v-card-text class="font-weight-medium">
-            Функционал просмотра полной статистики переходам по Вашим ссылкам.
+            {{ t('index.advantages.adv3.description') }}
           </v-card-text>
         </v-card>
         <v-card
@@ -94,10 +109,10 @@
             >
               mdi-monitor-dashboard
             </v-icon>
-            Удобство
+            {{ t('index.advantages.adv4.header') }}
           </v-card-title>
           <v-card-text class="font-weight-medium">
-            Быстрый, понятный и удобный интерфейс.
+            {{ t('index.advantages.adv4.description') }}
           </v-card-text>
         </v-card>
       </div>
@@ -110,10 +125,10 @@
         class="text-center text-md-start w-33"
       >
         <h2 class="text-h4 font-weight-bold mb-4">
-          Как можно использовать наш сервис?
+          {{ t('index.usage.header') }}
         </h2>
         <p class="font-weight-light">
-          Узнайте, как сокращенные ссылки могут помочь вам оптимизировать работу и сделать ваши задачи эффективнее.
+          {{ t('index.usage.description') }}
         </p>
       </div>
 
@@ -127,10 +142,12 @@
               <v-icon color="accent">
                 mdi-chart-bar
               </v-icon>
-              <span class="font-weight-bold pl-2">Для маркетинга</span>
+              <span class="font-weight-bold pl-2">
+                {{ t('index.examples.ex1.header') }}
+              </span>
             </v-col>
             <v-col cols="9">
-              Отслеживайте эффективность рекламных кампаний и оптимизируйте бюджеты.
+              {{ t('index.examples.ex1.description') }}
             </v-col>
           </v-row>
           <v-row>
@@ -138,10 +155,12 @@
               <v-icon color="accent">
                 mdi-account-multiple
               </v-icon>
-              <span class="font-weight-bold pl-2">Для блогеров</span>
+              <span class="font-weight-bold pl-2">
+                {{ t('index.examples.ex2.header') }}
+              </span>
             </v-col>
             <v-col cols="9">
-              Делитесь короткими и удобными ссылками в соцсетях для вашей аудитории.
+              {{ t('index.examples.ex2.description') }}
             </v-col>
           </v-row>
           <v-row>
@@ -149,10 +168,12 @@
               <v-icon color="accent">
                 mdi-briefcase
               </v-icon>
-              <span class="font-weight-bold pl-2">Для бизнеса</span>
+              <span class="font-weight-bold pl-2">
+                {{ t('index.examples.ex3.header') }}
+              </span>
             </v-col>
             <v-col cols="9">
-              Получайте аналитику и улучшайте взаимодействие с клиентами.
+              {{ t('index.examples.ex3.description') }}
             </v-col>
           </v-row>
           <v-row>
@@ -160,10 +181,12 @@
               <v-icon color="accent">
                 mdi-clock-outline
               </v-icon>
-              <span class="font-weight-bold pl-2">Для всех</span>
+              <span class="font-weight-bold pl-2">
+                {{ t('index.examples.ex4.header') }}
+              </span>
             </v-col>
             <v-col cols="9">
-              Сокращение ссылок — это просто, быстро и удобно для любых целей.
+              {{ t('index.examples.ex4.description') }}
             </v-col>
           </v-row>
         </v-card-text>
@@ -174,8 +197,9 @@
       <v-btn
         variant="tonal"
         class="bg-green"
+        @click="start"
       >
-        Начать работу!
+        {{ t('index.start') }}
       </v-btn>
     </v-container>
     <v-spacer />

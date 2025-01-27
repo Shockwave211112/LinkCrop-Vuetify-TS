@@ -3,9 +3,14 @@ import 'vuetify/styles'
 
 import { createVuetify } from 'vuetify'
 import {VDateInput} from "vuetify/labs/VDateInput";
-import {ru} from "vuetify/locale";
+import { useI18n } from 'vue-i18n';
+import i18n from "@/plugins/i18n";
+import {createVueI18nAdapter} from "vuetify/locale/adapters/vue-i18n";
 
 export default createVuetify({
+  locale: {
+    adapter: createVueI18nAdapter({i18n, useI18n}),
+  },
   theme: {
     defaultTheme: 'dark',
     themes: {
@@ -35,9 +40,4 @@ export default createVuetify({
   components: {
     VDateInput,
   },
-  locale: {
-    locale: 'ru',
-    fallback: 'en',
-    messages: { ru },
-  }
 })

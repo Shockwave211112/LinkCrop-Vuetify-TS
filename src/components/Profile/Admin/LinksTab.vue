@@ -4,19 +4,21 @@ import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
 import {formatDate} from "@/utils/formatters";
 import LinkEditModal from "@/components/Profile/Modals/LinkEditModal.vue";
+import {useI18n} from "vue-i18n";
 
+const { t } = useI18n();
 const notify = inject('notify') as NotifyFunction;
 const isLoading = ref<boolean>(true);
 
 const links = ref<Link[]>([]);
 const headers: object[] = [
   { title: 'ID', value: 'id', sortable: true },
-  { title: 'Название', value: 'name', sortable: true },
-  { title: 'Описание', value: 'description', sortable: true },
-  { title: 'Эндпоинт', value: 'referral', sortable: true },
-  { title: 'ID групп', value: 'groups', sortable: false },
-  { title: 'ID пользователей', value: 'users', sortable: false },
-  { title: 'Дата создания', value: 'created_at', sortable: true },
+  { title: t('profile.links.table.title'), value: 'name', sortable: true },
+  { title: t('profile.links.table.description'), value: 'description', sortable: true },
+  { title: t('profile.links.table.endpoint'), value: 'referral', sortable: true },
+  { title: t('profile.admin.groupsId'), value: 'groups', sortable: false },
+  { title: t('profile.admin.usersId'), value: 'users', sortable: false },
+  { title: t('profile.links.form.createdAt'), value: 'created_at', sortable: true },
 ];
 
 const currentPage = ref<number>(1);
@@ -27,10 +29,10 @@ const searchQuery = ref<string>('');
 const debounceTimer = ref<number | null>(null);
 const searchField = ref<string>('name');
 const searchFields: object[] = [
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Куда', value: 'origin'},
-  {title: 'Эндпоинт', value: 'referral'},
+  {title: t('profile.searchOptions.title'), value: 'name'},
+  {title: t('profile.searchOptions.description'), value: 'description'},
+  {title: t('profile.searchOptions.redirect'), value: 'origin'},
+  {title: t('profile.searchOptions.endpoint'), value: 'referral'},
 ];
 
 const currentOrder = ref<string>('id');
@@ -120,7 +122,7 @@ function changeSort(sortBy: object[]) {
         <v-text-field
           v-model="searchQuery"
           class="w-50"
-          label="Поиск"
+          :label="t('profile.search')"
           prepend-inner-icon="mdi-magnify"
           hide-details="auto"
           variant="solo-filled"
@@ -130,7 +132,7 @@ function changeSort(sortBy: object[]) {
         <v-select
           v-model="searchField"
           class="w-25"
-          label="Где?"
+          :label="t('profile.whereSearch')"
           hide-details="auto"
           :items="searchFields"
           variant="solo-filled"

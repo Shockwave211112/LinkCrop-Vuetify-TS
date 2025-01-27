@@ -7,7 +7,9 @@ const notify = inject('notify') as NotifyFunction;
 import {email, required} from "@vuelidate/validators";
 import {useVuelidate} from "@vuelidate/core";
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
+import {useI18n} from "vue-i18n";
 
+const { t } = useI18n();
 const isLoading = ref<boolean>(true);
 const props =  defineProps({
   userId: ref<number>(-1),
@@ -53,7 +55,7 @@ async function fetchUserInfo() {
 async function save() {
   const isValid = await v$.value.$validate();
   if (!isValid) {
-    notify("Проверьте данные в полях!", 'warning');
+    notify(t('messages.checkFields'), 'warning');
     return
   }
 
@@ -89,7 +91,7 @@ async function save() {
         />
       </template>
       <v-card-title class="d-flex justify-space-between align-center">
-        Пользователь #{{ userId }}
+        {{ t('profile.admin.forms.user') + ' #' + userId }}
         <v-btn
           icon="mdi-close"
           size="small"
@@ -108,7 +110,7 @@ async function save() {
           <v-text-field
             v-model="user.name"
             variant="outlined"
-            label="Имя пользователя"
+            :label="t('profile.admin.users.name')"
             :error="v$.user.name.$error"
             :class="v$.user.name.$error ? 'pb-2' : ''"
             :error-messages="v$.user.name.$errors[0]?.$message.toString()"
@@ -117,14 +119,16 @@ async function save() {
             <v-text-field
               v-model="user.email"
               variant="outlined"
-              label="Адрес электронной почты"
+              label="Email"
               :error="v$.user.email.$error"
               :class="v$.user.email.$error ? 'pb-2' : ''"
               :error-messages="v$.user.email.$errors[0]?.$message.toString()"
             />
             <v-checkbox
               v-model="emailVerified"
-              :label="'Email' + (emailVerified ? '' : ' не') + ' подтверждён'"
+              :label="emailVerified
+                ? t('profile.admin.forms.emailConfirmation')
+                : t('profile.admin.forms.emailNotConfirmed')"
               disabled
               false-icon="mdi-close"
             />
@@ -134,7 +138,7 @@ async function save() {
             variant="outlined"
             disabled
             hide-details
-            label="Дата регистрации"
+            :label="t('profile.admin.users.createdAt')"
             format="DD-MM-YYYY"
           />
         </div>
@@ -146,7 +150,7 @@ async function save() {
           variant="tonal"
           @click="deleteDialog = true"
         >
-          Удалить
+          {{ t('profile.buttons.delete') }}
         </v-btn>
         <v-btn
           prepend-icon="mdi-content-save"
@@ -154,7 +158,7 @@ async function save() {
           variant="tonal"
           @click="save"
         >
-          Сохранить
+          {{ t('profile.buttons.save') }}
         </v-btn>
       </v-card-actions>
     </v-card>

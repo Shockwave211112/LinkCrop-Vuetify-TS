@@ -3,8 +3,10 @@ import {computed, inject, onMounted, reactive, ref} from "vue";
 import {apiClient} from "@/plugins/axios";
 
 import type {NotifyFunction, Permission, User} from "@/types/objects";
+import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 
+const { t } = useI18n();
 const isLoading = ref<boolean>(true);
 const props =  defineProps({
   role: ref<number>(-1),
@@ -78,7 +80,7 @@ function toggleAllPermissions(): void {
         />
       </template>
       <v-card-title class="d-flex justify-space-between align-center">
-        Роль #{{ role.name }}
+        {{ t('profile.admin.forms.role') + ' #' + role.name }}
         <v-btn
           icon="mdi-close"
           size="small"
@@ -100,7 +102,7 @@ function toggleAllPermissions(): void {
             class="ma-1"
             @click="toggleAllPermissions"
           >
-            {{ allSelected ? 'Снять выделение' : 'Выбрать все' }}
+            {{ allSelected ? t('profile.admin.forms.uncheck') : t('profile.admin.forms.checkAll') }}
           </v-btn>
           <v-checkbox
             v-for="permission in permissions"
@@ -120,7 +122,7 @@ function toggleAllPermissions(): void {
           variant="tonal"
           @click="save"
         >
-          Сохранить
+          {{ t('profile.buttons.save') }}
         </v-btn>
       </v-card-actions>
     </v-card>

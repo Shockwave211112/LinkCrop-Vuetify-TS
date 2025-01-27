@@ -1,21 +1,13 @@
 <script setup lang="ts">
-import {inject, ref} from "vue";
-import type {NotifyFunction} from "@/types/objects";
-import UserEditModal from "@/components/Profile/Modals/UserEditModal.vue";
+import {ref} from "vue";
 import RoleEditModal from "@/components/Profile/Modals/RoleEditModal.vue";
+import {useI18n} from "vue-i18n";
 
-const notify = inject('notify') as NotifyFunction;
-
+const { t } = useI18n();
 const roles: object[] = [
-  { id: 1, name: 'Админ' },
-  { id: 2, name: 'Пользователь' },
+  { id: 1, name: t('profile.admin.roles.admin') },
+  { id: 2, name: t('profile.admin.roles.user') },
 ];
-
-const headers: object[] = [
-  { title: 'ID', value: 'id', sortable: true },
-  { title: 'Имя', value: 'name', sortable: true },
-];
-
 const selectedRole = ref<object>({});
 const editDialog = ref<boolean>(false);
 
@@ -27,7 +19,7 @@ function edit(item: object) {
 
 <template>
   <v-card>
-    <v-card-title>Список ролей</v-card-title>
+    <v-card-title>{{ t('profile.admin.roleList') }}</v-card-title>
     <v-card-text>
       <v-table
         hover
@@ -35,7 +27,7 @@ function edit(item: object) {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Название</th>
+            <th>{{ t('profile.links.table.title') }}</th>
           </tr>
         </thead>
         <tbody>

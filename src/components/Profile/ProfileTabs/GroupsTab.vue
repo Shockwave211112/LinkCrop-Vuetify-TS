@@ -5,7 +5,9 @@ import { apiClient }  from "@/plugins/axios";
 import type {Group, NotifyFunction} from "@/types/objects";
 import {useGroupStore} from "@/store/groups";
 import {useLinkStore} from "@/store/links";
-import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
+import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const notify = inject('notify') as NotifyFunction;
 
 const linkStore = useLinkStore();
@@ -18,18 +20,18 @@ const searchQuery = ref<string>('');
 const debounceTimer = ref<number | null>(null);
 const searchField = ref<string>('name');
 const searchFields: object[] = [
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Количество ссылок', value: 'count'},
+  {title: t('profile.searchOptions.title'), value: 'name'},
+  {title: t('profile.searchOptions.description'), value: 'description'},
+  {title: t('profile.searchOptions.linksCount'), value: 'count'},
 ];
 
 const currentOrder = ref<string>('id');
 const currentSortDir = ref<string>('desc');
 const sortOrders: object[] = [
   {title: 'ID', value: 'id'},
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Количество ссылок', value: 'count'},
+  {title: t('profile.sortOptions.title'), value: 'name'},
+  {title: t('profile.sortOptions.description'), value: 'description'},
+  {title: t('profile.sortOptions.linksCount'), value: 'count'},
 ];
 
 const groups = ref<Group[]>([]);
@@ -174,7 +176,7 @@ function deleteItem() {
       <div
         class="title w-25"
       >
-        <span>Список групп</span>
+        <span>{{ t('profile.groups.header') }}</span>
         <v-btn
           icon="mdi-plus"
           size="small"
@@ -186,7 +188,7 @@ function deleteItem() {
             activator="parent"
             location="top"
           >
-            Создать группу
+            {{ t('profile.groups.create') }}
           </v-tooltip>
         </v-btn>
       </div>
@@ -196,7 +198,7 @@ function deleteItem() {
         <v-text-field
           v-model="searchQuery"
           class="w-50"
-          label="Поиск"
+          :label="t('profile.search')"
           prepend-inner-icon="mdi-magnify"
           hide-details="auto"
           variant="solo-filled"
@@ -206,7 +208,7 @@ function deleteItem() {
         <v-select
           v-model="searchField"
           class="w-25"
-          label="Где?"
+          :label="t('profile.whereSearch')"
           hide-details="auto"
           :items="searchFields"
           variant="solo-filled"
@@ -229,12 +231,12 @@ function deleteItem() {
             activator="parent"
             location="top"
           >
-            Порядок сортировки
+            {{ t('profile.sortOrder') }}
           </v-tooltip>
         </v-btn>
         <v-select
           v-model="currentOrder"
-          label="Сортировка"
+          :label="t('profile.sort')"
           hide-details="auto"
           :items="sortOrders"
           max-width="200"
@@ -261,7 +263,7 @@ function deleteItem() {
                   cols="2"
                 >
                   <div class="opacity-30 pb-1">
-                    Название:
+                    {{ t('profile.groups.table.title') }}
                   </div>
                   <div>
                     {{ group.name }}
@@ -271,7 +273,7 @@ function deleteItem() {
                   cols="6"
                 >
                   <div class="opacity-30 pb-1">
-                    Описание:
+                    {{ t('profile.groups.table.description') }}
                   </div>
                   <div>
                     {{ group.description }}
@@ -279,7 +281,7 @@ function deleteItem() {
                 </v-col>
                 <v-col>
                   <div class="opacity-30 pb-1">
-                    Количество ссылок в группе:
+                    {{ t('profile.groups.table.linksCount') }}
                   </div>
                   <div>{{ group.count }}</div>
                 </v-col>
@@ -302,7 +304,7 @@ function deleteItem() {
                       activator="parent"
                       location="top"
                     >
-                      Удалить
+                      {{ t('profile.buttons.delete') }}
                     </v-tooltip>
                   </v-btn>
                   <v-btn
@@ -316,7 +318,7 @@ function deleteItem() {
                       activator="parent"
                       location="top"
                     >
-                      Сохранить
+                      {{ t('profile.buttons.save') }}
                     </v-tooltip>
                   </v-btn>
                 </template>
@@ -332,7 +334,7 @@ function deleteItem() {
           v-else-if="!groups.length"
           class="text-gray font-weight-light"
         >
-          Ничего не найдено
+          {{ t('profile.nothingFound') }}
         </h3>
       </v-expansion-panels>
       <v-spacer />
@@ -357,7 +359,9 @@ function deleteItem() {
       scrim="black"
     >
       <v-card>
-        <v-card-title>Создание новой группы</v-card-title>
+        <v-card-title>
+          {{ t('profile.groups.form.header') }}
+        </v-card-title>
         <v-card-text>
           <GroupEditForm
             :group="tempCreationGroup"
@@ -373,7 +377,7 @@ function deleteItem() {
                   activator="parent"
                   location="top"
                 >
-                  Сбросить поля
+                  {{ t('profile.buttons.reset') }}
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -386,7 +390,7 @@ function deleteItem() {
                   activator="parent"
                   location="top"
                 >
-                  Сохранить
+                  {{ t('profile.buttons.save') }}
                 </v-tooltip>
               </v-btn>
             </template>

@@ -7,8 +7,10 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
 
 import type {NotifyFunction} from "@/types/objects";
+import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 
+const { t } = useI18n();
 const userEmail = ref<string>(null);
 
 const rules = {
@@ -22,20 +24,20 @@ async function sendResetPasswordEmail() {
       'email': userEmail.value,
     })
       .then(() => {
-        notify("Письмо отправлено!", 'success');
+        notify(t('messages.emailSent'), 'success');
         }
       ).catch(({response}) => {
         notify(response.data.message, 'error');
       })
   } catch (error) {
-    notify("Неправильные данные!", 'error');
+    notify(t('errors.incorrect'), 'error');
   }
 }
 </script>
 
 <template>
   <div>
-    <v-card-title>Сброс пароля</v-card-title>
+    <v-card-title>{{ t('header.resetTitle') }}</v-card-title>
     <v-form>
       <v-card-text>
         <v-text-field
@@ -59,7 +61,7 @@ async function sendResetPasswordEmail() {
           variant="text"
           @click="sendResetPasswordEmail"
         >
-          Сбросить
+          {{ t('header.reset') }}
         </v-btn>
       </v-card-actions>
     </v-form>

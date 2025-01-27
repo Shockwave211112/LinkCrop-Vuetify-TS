@@ -7,6 +7,9 @@ import { apiClient }  from "@/plugins/axios";
 import type { Link, NotifyFunction } from "@/types/objects";
 import {useLinkStore} from "@/store/links";
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const notify = inject('notify') as NotifyFunction;
 
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
@@ -21,17 +24,17 @@ const selecetedId = ref<number>(-1);
 const showingGroupsBeforeFocus = ref<number[]>([]);
 
 const searchFields: object[] = [
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Куда', value: 'origin'},
-  {title: 'Эндпоинт', value: 'referral'},
+  {title: t('profile.searchOptions.title'), value: 'name'},
+  {title: t('profile.searchOptions.description'), value: 'description'},
+  {title: t('profile.searchOptions.redirect'), value: 'origin'},
+  {title: t('profile.searchOptions.endpoint'), value: 'referral'},
 ];
 
 const sortOrders: object[] = [
   {title: 'ID', value: 'id'},
-  {title: 'Название', value: 'name'},
-  {title: 'Описание', value: 'description'},
-  {title: 'Эндпоинт', value: 'referral'},
+  {title: t('profile.sortOptions.title'), value: 'name'},
+  {title: t('profile.sortOptions.description'), value: 'description'},
+  {title: t('profile.sortOptions.endpoint'), value: 'referral'},
 ];
 
 const tempCreationLink = reactive<Link>({
@@ -59,9 +62,9 @@ function filterByGroups(): void {
 function copyReferral(referral: string) {
   try {
     navigator.clipboard.writeText(referralUrl + referral);
-    notify("Скопировано", 'success');
+    notify(t('messages.copied'), 'success');
   } catch (error) {
-    notify("Произошла ошибка", 'error');
+    notify(t('errors.default'), 'error');
   }
 }
 
@@ -155,7 +158,7 @@ function deleteItem() {
       <div
         class="title w-25"
       >
-        <span>Список ссылок</span>
+        <span>{{ t('profile.links.header') }}</span>
         <v-btn
           icon="mdi-plus"
           size="small"
@@ -167,7 +170,7 @@ function deleteItem() {
             activator="parent"
             location="top"
           >
-            Создать ссылку
+            {{ t('profile.links.create') }}
           </v-tooltip>
         </v-btn>
       </div>
@@ -177,7 +180,7 @@ function deleteItem() {
         <v-text-field
           v-model="linkStore.searchQuery"
           class="w-50"
-          label="Поиск"
+          :label="t('profile.search')"
           prepend-inner-icon="mdi-magnify"
           hide-details="auto"
           variant="solo-filled"
@@ -187,7 +190,7 @@ function deleteItem() {
         <v-select
           v-model="linkStore.searchField"
           class="w-25"
-          label="Где?"
+          :label="t('profile.whereSearch')"
           hide-details="auto"
           :items="searchFields"
           variant="solo-filled"
@@ -213,12 +216,12 @@ function deleteItem() {
             activator="parent"
             location="top"
           >
-            Порядок сортировки
+            {{ t('profile.sortOrder') }}
           </v-tooltip>
         </v-btn>
         <v-select
           v-model="linkStore.currentOrder"
-          label="Сортировка"
+          :label="t('profile.sort')"
           hide-details="auto"
           :items="sortOrders"
           max-width="140"
@@ -228,8 +231,8 @@ function deleteItem() {
         />
         <v-select
           v-model="linkStore.showingGroups"
-          label="Группы"
-          placeholder="Все"
+          :label="t('profile.groups.title')"
+          :placeholder="t('profile.defaultGroupSelect')"
           hide-details="auto"
           :items="groupStore.groupList"
           item-value="id"
@@ -278,7 +281,7 @@ function deleteItem() {
                   cols="2"
                 >
                   <div class="opacity-30 pb-1">
-                    Название:
+                    {{ t('profile.links.table.title') }}
                   </div>
                   <div>
                     {{ link.name }}
@@ -288,7 +291,7 @@ function deleteItem() {
                   cols="4"
                 >
                   <div class="opacity-30 pb-1">
-                    Описание:
+                    {{ t('profile.links.table.description') }}
                   </div>
                   <div>
                     {{ link.description }}
@@ -298,7 +301,7 @@ function deleteItem() {
                   cols="4"
                 >
                   <div class="opacity-30 pb-1">
-                    Группы:
+                    {{ t('profile.links.table.groups') }}
                   </div>
                   <v-chip
                     v-for="(group, index) in link.groups"
@@ -313,7 +316,7 @@ function deleteItem() {
                   cols="2"
                 >
                   <div class="opacity-30 pb-1">
-                    Эндпоинт:
+                    {{ t('profile.links.table.endpoint') }}
                   </div>
                   <div>{{ link.referral }}</div>
                 </v-col>
@@ -331,7 +334,7 @@ function deleteItem() {
                       activator="parent"
                       location="top"
                     >
-                      Открыть статистику
+                      {{ t('profile.links.table.buttons.stat') }}
                     </v-tooltip>
                   </v-btn>
                   <v-btn
@@ -345,7 +348,7 @@ function deleteItem() {
                       activator="parent"
                       location="top"
                     >
-                      Скопировать ссылку
+                      {{ t('profile.links.table.buttons.copy') }}
                     </v-tooltip>
                   </v-btn>
                   <v-icon :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
@@ -367,7 +370,7 @@ function deleteItem() {
                       activator="parent"
                       location="top"
                     >
-                      Удалить
+                      {{ t('profile.buttons.delete') }}
                     </v-tooltip>
                   </v-btn>
                   <v-btn
@@ -380,7 +383,7 @@ function deleteItem() {
                       activator="parent"
                       location="top"
                     >
-                      Сохранить
+                      {{ t('profile.buttons.save') }}
                     </v-tooltip>
                   </v-btn>
                 </template>
@@ -396,7 +399,7 @@ function deleteItem() {
           v-else-if="!linkStore.links?.length"
           class="text-gray font-weight-light"
         >
-          Ничего не найдено
+          {{ t('profile.nothingFound') }}
         </h3>
       </v-expansion-panels>
       <v-spacer />
@@ -415,7 +418,9 @@ function deleteItem() {
       scrim="black"
     >
       <v-card>
-        <v-card-title>Создание новой ссылки</v-card-title>
+        <v-card-title>
+          {{ t('profile.links.form.header') }}
+        </v-card-title>
         <v-card-text>
           <LinkEditForm
             :link="tempCreationLink"
@@ -431,7 +436,7 @@ function deleteItem() {
                   activator="parent"
                   location="top"
                 >
-                  Сбросить поля
+                  {{ t('profile.buttons.reset') }}
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -444,7 +449,7 @@ function deleteItem() {
                   activator="parent"
                   location="top"
                 >
-                  Сохранить
+                  {{ t('profile.buttons.save') }}
                 </v-tooltip>
               </v-btn>
             </template>

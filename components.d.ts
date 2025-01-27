@@ -16,7 +16,7 @@ declare module 'vue' {
     ForgotPasswordForm: typeof import('./src/components/Header/Auth/ForgotPasswordForm.vue')['default']
     GroupEditForm: typeof import('./src/components/Profile/GroupEditForm.vue')['default']
     GroupEditModal: typeof import('./src/components/Profile/Modals/GroupEditModal.vue')['default']
-    GroupsTab: typeof import('./src/components/Profile/ProfileTabs/GroupsTab.vue')['default']
+    GroupsTab: typeof import('./src/components/Profile/Admin/GroupsTab.vue')['default']
     Header: typeof import('./src/components/Header/Header.vue')['default']
     LinkEditForm: typeof import('./src/components/Profile/LinkEditForm.vue')['default']
     LinkEditModal: typeof import('./src/components/Profile/Modals/LinkEditModal.vue')['default']

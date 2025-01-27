@@ -26,14 +26,22 @@ const addNotification = (message: string, color?: string, timeout?: number) => {
   });
 };
 
-import {useTheme} from "vuetify";
+import {useLocale, useTheme} from "vuetify";
 import {useRoute} from "vue-router";
+import {getCookie} from "@/utils/cookie";
+
 
 const route = useRoute();
 const profilePage = computed(() => route.name === "/profile");
 
+const { current } = useLocale();
+const savedLang = getCookie('locale');
+if(savedLang) {
+  current.value = savedLang;
+}
+
 const theme = useTheme();
-const savedTheme = localStorage.getItem('theme');
+const savedTheme = getCookie('theme');
 if(savedTheme) {
   theme.global.name.value = savedTheme;
 }

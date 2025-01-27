@@ -7,9 +7,11 @@ import type {TokenResponse} from "@/types/responses";
 import {apiClient} from "@/plugins/axios";
 import type {NotifyFunction} from "@/types/objects";
 import {useUserStore} from "@/store/user";
+import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 const user = useUserStore();
 
+const { t } = useI18n();
 const name = ref<string>('')
 const userEmail = ref<string>('')
 const password = ref<string>('')
@@ -36,7 +38,7 @@ const v$ = useVuelidate(rules, { name, userEmail, password, passwordConfirmation
 async function register(): Promise<void> {
   const isValid = await v$.value.$validate();
   if (!isValid) {
-    notify("Проверьте данные в полях!", 'warning');
+    notify(t('messages.checkFields'), 'warning');
     return
   }
   try {
@@ -48,13 +50,13 @@ async function register(): Promise<void> {
     }).then((response) => {
         localStorage.setItem('authToken', response.data.token)
         user.login();
-        notify("Регистрация успешна!", 'success');
+        notify(t('messages.register'), 'success');
       }
     ).catch(({response}) => {
       notify(response.data.message, 'error');
     })
   } catch (error) {
-    notify("Неправильные данные!", 'error');
+    notify(t('errors.incorrect'), 'error');
   }
 };
 
@@ -62,7 +64,7 @@ async function register(): Promise<void> {
 
 <template>
   <div>
-    <v-card-title>Регистрация</v-card-title>
+    <v-card-title>{{ t('header.register') }}</v-card-title>
     <v-form>
       <v-card-text>
         <v-text-field
@@ -78,7 +80,7 @@ async function register(): Promise<void> {
           v-model="name"
           variant="outlined"
           type="text"
-          label="Имя"
+          :label="t('header.name')"
           :error="v$.name.$error"
           :class="v$.name.$error ? 'pb-2' : ''"
           :error-messages="v$.name.$errors[0]?.$message.toString()"
@@ -87,7 +89,7 @@ async function register(): Promise<void> {
           v-model="password"
           variant="outlined"
           type="password"
-          label="Пароль"
+          :label="t('header.password')"
           autocomplete="off"
           :error="v$.password.$error"
           :class="v$.password.$error ? 'pb-2' : ''"
@@ -97,7 +99,7 @@ async function register(): Promise<void> {
           v-model="passwordConfirmation"
           type="password"
           variant="outlined"
-          label="Повтор пароля"
+          :label="t('header.passwordConfirmation')"
           autocomplete="off"
           :error="v$.passwordConfirmation.$error"
           :error-messages="v$.passwordConfirmation.$errors[0]?.$message.toString()"
@@ -111,7 +113,7 @@ async function register(): Promise<void> {
           @click="$emit('switch')"
         />
         <v-btn
-          text="Зарегистрироваться"
+          :text="t('header.registerConfirm')"
           variant="text"
           @click="register"
         />

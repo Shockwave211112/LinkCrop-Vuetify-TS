@@ -3,15 +3,15 @@ import {inject, reactive, ref} from "vue";
 import {apiClient} from "@/plugins/axios";
 
 import type {Link, NotifyFunction} from "@/types/objects";
-const notify = inject('notify') as NotifyFunction;
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
 import StatisticModal from "@/components/Profile/Modals/StatisticModal.vue";
+import {useI18n} from "vue-i18n";
 
+const { t } = useI18n();
+const notify = inject('notify') as NotifyFunction;
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
-
 const isLoading = ref<boolean>(true);
-
 const props =  defineProps({
   linkId: ref<number>(-1),
 });
@@ -85,7 +85,7 @@ function copyReferral(referral: string) {
         />
       </template>
       <v-card-title class="d-flex justify-space-between align-center">
-        Ссылка #{{ linkId }}
+        {{ t('profile.admin.forms.link') + ' #' + linkId }}
         <v-btn
           icon="mdi-close"
           size="small"
@@ -116,7 +116,7 @@ function copyReferral(referral: string) {
                   activator="parent"
                   location="top"
                 >
-                  Открыть статистику
+                  {{ t('profile.links.table.buttons.stat') }}
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -129,7 +129,7 @@ function copyReferral(referral: string) {
                   activator="parent"
                   location="top"
                 >
-                  Скопировать ссылку
+                  {{ t('profile.links.table.buttons.copy') }}
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -142,7 +142,7 @@ function copyReferral(referral: string) {
                   activator="parent"
                   location="top"
                 >
-                  Удалить
+                  {{ t('profile.buttons.delete') }}
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -155,7 +155,7 @@ function copyReferral(referral: string) {
                   activator="parent"
                   location="top"
                 >
-                  Сохранить
+                  {{ t('profile.buttons.save') }}
                 </v-tooltip>
               </v-btn>
             </template>

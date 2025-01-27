@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import {useI18n} from "vue-i18n";
+
 const date = new Date().getFullYear();
 const apiLink = import.meta.env.VITE_API_URL + '/api/docs';
+const { t } = useI18n();
 </script>
 
 <template>
   <footer class="w-100 d-flex bg-primary pr-3 pl-3 justify-lg-space-between align-center font-weight-light">
     <div>
-      Фоновое изображение by <a
+      {{ t('footer.image') }}
+      <a
         class="text-decoration-none"
         href="https://superdesigner.co"
         target="_blank"
@@ -21,7 +25,8 @@ const apiLink = import.meta.env.VITE_API_URL + '/api/docs';
         >API</a>
       </div>
       <div class="rights align-right">
-        LinkCrop © {{ date }}<br>Все права защищены
+        LinkCrop © {{ date }}<br>
+        {{ t('footer.rights') }}
       </div>
     </div>
   </footer>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {inject, ref, watch} from 'vue'
+import {computed, inject, ref, watch} from 'vue'
 import {useUserStore} from "@/store/user";
 import {useRouter} from "vue-router";
 import {apiClient} from "@/plugins/axios";
@@ -9,21 +9,35 @@ import type {NotifyFunction} from "@/types/objects";
 import AuthForm from './Auth/AuthForm.vue';
 import RegisterForm from './Auth/RegisterForm.vue';
 import ForgotPasswordForm from "@/components/Header/Auth/ForgotPasswordForm.vue";
-import {useTheme} from "vuetify";
+import {useLocale, useTheme} from "vuetify";
+import {useI18n} from "vue-i18n";
+import {setCookie} from "@/utils/cookie";
+import {useAppStore} from "@/store/app";
 
-const menu = ref(false);
 const register = ref(false);
 const forgot = ref(false);
 
+const notify = inject('notify') as NotifyFunction;
+const user = useUserStore();
+const app = useAppStore();
+const router = useRouter();
+const { t } = useI18n();
 const theme = useTheme()
+const { current } = useLocale();
 
 function toggleTheme () {
   const newTheme = theme.global.current.value.dark ? 'light' : 'dark'
   theme.global.name.value = newTheme;
-  localStorage.setItem('theme', newTheme);
+  setCookie('theme', newTheme, 180);
 }
 
-watch(menu, (newValue) => {
+async function changeLanguage () {
+  current.value = current.value === 'en' ? 'ru' : 'en';
+  setCookie('locale', current.value, 180);
+  window.location.reload();
+}
+
+watch(() => app.isMenuOpen, (newValue) => {
   if(!newValue) {
     register.value = false
     forgot.value = false
@@ -47,18 +61,14 @@ const switchForm = (action: string = 'auth') => {
   }
 };
 
-const notify = inject('notify') as NotifyFunction;
-const user = useUserStore();
-const router = useRouter();
-
 async function logout() {
   try {
     apiClient.get('/auth/logout')
       .then(() => {
         localStorage.removeItem('authToken')
         user.logout();
-        notify('Вы вышли из системы', 'success', 3000);
-        menu.value = false;
+        notify(t('messages.logout'), 'success', 3000);
+        app.toggleMenu(false);
         router.push('/');
       }
     ).catch(({response}) => {
@@ -83,14 +93,21 @@ async function logout() {
         :icon="theme.global.name.value === 'dark' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
         size="small"
         variant="flat"
-        class="bg-primary ma-2"
+        class="bg-primary ml-2"
         @click="toggleTheme"
+      />
+      <v-btn
+        icon="mdi-translate"
+        size="small"
+        variant="flat"
+        class="bg-primary"
+        @click="changeLanguage"
       />
     </div>
     <div class="d-flex align-center">
       <v-menu
         v-if="!user.userData"
-        v-model="menu"
+        v-model="app.isMenuOpen"
         min-width="300"
         offset="8"
         :close-on-content-click="false"
@@ -101,9 +118,9 @@ async function logout() {
             variant="tonal"
             prepend-icon="mdi-login"
             v-bind="props"
-            @click="menu=true"
+            @click="app.toggleMenu(true)"
           >
-            Войти/Зарегистрироваться
+            {{ t('header.title') }}
           </v-btn>
         </template>
         <v-card>
@@ -130,7 +147,7 @@ async function logout() {
 
       <v-menu
         v-else
-        v-model="menu"
+        v-model="app.isMenuOpen"
         min-width="300"
         offset="8"
         :close-on-content-click="false"
@@ -139,7 +156,7 @@ async function logout() {
           <div
             class="user d-flex align-center"
             v-bind="props"
-            @click="menu=true"
+            @click="app.toggleMenu(true)"
           >
             <span>{{ user.userData.name }}</span>
             <v-icon
@@ -157,7 +174,7 @@ async function logout() {
               prepend-icon="mdi-account"
               @click="router.push('/profile')"
             >
-              Мои ссылки
+              {{ t('header.profile') }}
             </v-btn>
           </v-list-item>
           <v-list-item>
@@ -166,7 +183,7 @@ async function logout() {
               prepend-icon="mdi-logout"
               @click="logout"
             >
-              Выйти
+              {{ t('header.logout') }}
             </v-btn>
           </v-list-item>
         </v-card>

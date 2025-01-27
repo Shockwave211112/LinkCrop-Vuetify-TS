@@ -4,16 +4,18 @@ import type {NotifyFunction, User} from "@/types/objects";
 import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
 import {formatDate} from "@/utils/formatters";
+import {useI18n} from "vue-i18n";
 
 const notify = inject('notify') as NotifyFunction;
 const isLoading = ref<boolean>(true);
+const { t } = useI18n();
 
 const users = ref<User[]>([]);
 const headers: object[] = [
     { title: 'ID', value: 'id', sortable: true },
-    { title: 'Имя', value: 'name', sortable: true },
+    { title: t('profile.admin.users.name'), value: 'name', sortable: true },
     { title: 'Email', value: 'email', sortable: true },
-    { title: 'Дата регистрации', value: 'created_at', sortable: true },
+    { title: t('profile.admin.users.createdAt'), value: 'created_at', sortable: true },
 ];
 
 const currentPage = ref<number>(1);
@@ -24,7 +26,7 @@ const searchQuery = ref<string>('');
 const debounceTimer = ref<number | null>(null);
 const searchField = ref<string>('name');
 const searchFields: object[] = [
-  {title: 'Имя', value: 'name'},
+  {title: t('profile.admin.users.name'), value: 'name'},
   {title: 'Email', value: 'email'},
   {title: 'ID', value: 'id'},
 ];
@@ -116,7 +118,7 @@ function changeSort(sortBy: object[]) {
         <v-text-field
           v-model="searchQuery"
           class="w-75"
-          label="Поиск"
+          :label="t('profile.search')"
           prepend-inner-icon="mdi-magnify"
           hide-details="auto"
           variant="solo-filled"
@@ -126,7 +128,7 @@ function changeSort(sortBy: object[]) {
         <v-select
           v-model="searchField"
           class="w-25"
-          label="Где?"
+          :label="t('profile.whereSearch')"
           hide-details="auto"
           :items="searchFields"
           variant="solo-filled"

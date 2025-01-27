@@ -6,8 +6,9 @@ import {useVuelidate} from "@vuelidate/core";
 
 import type {NotifyFunction} from "@/types/objects";
 import {useGroupStore} from "@/store/groups";
+import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
-
+const { t } = useI18n();
 const groups = useGroupStore().groupList;
 
 const props =  defineProps({
@@ -38,7 +39,7 @@ const v$ = useVuelidate(rules, {props});
 async function validateLinkForm() {
   const isValid = await v$.value.$validate();
   if (!isValid) {
-    notify("Проверьте данные в полях!", 'warning');
+    notify(t('messages.checkFields'), 'warning');
   }
   return isValid;
 }
@@ -53,7 +54,7 @@ async function validateLinkForm() {
       <v-text-field
         v-model="props.link.name"
         variant="outlined"
-        label="Название"
+        :label="t('profile.links.form.title')"
         :error="v$.props.link.name.$error"
         :class="v$.props.link.name.$error ? 'pb-2' : ''"
         :error-messages="v$.props.link.name.$errors[0]?.$message.toString()"
@@ -67,13 +68,13 @@ async function validateLinkForm() {
         multiple
         chips
         :disabled="props.editGroups == false"
-        label="Группы"
+        :label="t('profile.links.form.groups')"
       />
       <v-date-input
         v-model="props.link.created_at"
         variant="outlined"
         disabled
-        label="Дата создания"
+        :label="t('profile.links.form.createdAt')"
         format="DD-MM-YYYY"
       />
     </v-col>
@@ -84,7 +85,7 @@ async function validateLinkForm() {
       <v-text-field
         v-model="props.link.origin"
         variant="outlined"
-        label="Куда редиректим?"
+        :label="t('profile.links.form.redirect')"
         :error="v$.props.link.origin.$error"
         :class="v$.props.link.origin.$error ? 'pb-2' : ''"
         :error-messages="v$.props.link.origin.$errors[0]?.$message.toString()"
@@ -92,7 +93,7 @@ async function validateLinkForm() {
       <v-text-field
         v-model="props.link.description"
         variant="outlined"
-        label="Описание"
+        :label="t('profile.links.form.description')"
         :error="v$.props.link.description.$error"
         :class="v$.props.link.description.$error ? 'pb-2' : ''"
         :error-messages="v$.props.link.description.$errors[0]?.$message.toString()"

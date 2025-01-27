@@ -7,8 +7,10 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
 
 import type {NotifyFunction} from "@/types/objects";
+import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 
+const { t } = useI18n();
 const userEmail = ref<string>(null);
 const password = ref<string>(null);
 
@@ -23,7 +25,7 @@ const v$ = useVuelidate(rules, {userEmail, password});
 async function auth(): Promise<void> {
   const isValid = await v$.value.$validate();
   if (!isValid) {
-    notify("Проверьте данные в полях!", 'warning');
+    notify(t('messages.checkFields'), 'warning');
     return
   }
   try {
@@ -33,13 +35,13 @@ async function auth(): Promise<void> {
     }).then((response) => {
       localStorage.setItem('authToken', response.data.token)
       user.login();
-      notify("Авторизация успешна!", 'success');
+      notify(t('messages.login'), 'success');
       }
     ).catch(({response}) => {
       notify(response.data.message, 'error');
     })
   } catch (error) {
-    notify("Неправильные данные!", 'error');
+    notify(t('errors.incorrect'), 'error');
   }
 };
 
@@ -53,14 +55,14 @@ async function getOauthLink(provider: string = 'google') {
       notify(response.data.message, 'error');
     })
   } catch (error) {
-    notify("Неправильные данные!", 'error');
+    notify(t('errors.incorrect'), 'error');
   }
 }
 </script>
 
 <template>
   <div>
-    <v-card-title>Авторизация</v-card-title>
+    <v-card-title>{{ t('header.auth') }}</v-card-title>
     <v-form>
       <v-card-text>
         <v-text-field
@@ -76,7 +78,7 @@ async function getOauthLink(provider: string = 'google') {
           type="password"
           autocomplete="off"
           variant="outlined"
-          label="Пароль"
+          :label="t('header.password')"
           hide-details="auto"
           :error="v$.password.$error"
           :error-messages="v$.password.$errors[0]?.$message.toString()"
@@ -87,26 +89,26 @@ async function getOauthLink(provider: string = 'google') {
             size="small"
             @click="$emit('forgot')"
           >
-            Забыли пароль?
+            {{ t('header.forgot') }}
           </v-btn>
         </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn
-          text="Войти"
+          :text="t('header.login')"
           variant="text"
           @click="auth"
         />
         <v-btn
-          text="Регистрация"
+          :text="t('header.register')"
           variant="text"
           @click="$emit('switch')"
         />
       </v-card-actions>
       <div class="social d-flex flex-column align-center mb-5">
         <div class="text-grey">
-          Или войти с помощью соц. сетей:
+          {{ t('header.social') }}
         </div>
         <div class="buttons mt-2">
           <v-btn

@@ -5,13 +5,12 @@ import GroupsTab from "@/components/Profile/ProfileTabs/GroupsTab.vue";
 import AdminTab from "@/components/Profile/ProfileTabs/AdminTab.vue";
 import {useUserStore} from "@/store/user";
 import {useGroupStore} from "@/store/groups";
-import {useTheme} from "vuetify";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const tab = ref<string>('links');
 const user = useUserStore().userData;
 const groups = useGroupStore();
-
-const theme = useTheme();
 
 onMounted(() => {
   groups.fetchGroups();
@@ -28,18 +27,18 @@ onMounted(() => {
       >
         <v-tab
           prepend-icon="mdi-link"
-          text="Ссылки"
+          :text="t('profile.links.title')"
           value="links"
         />
         <v-tab
           prepend-icon="mdi-group"
-          text="Группы"
+          :text="t('profile.groups.title')"
           value="groups"
         />
         <v-tab
           v-show="user?.roles.includes('admin')"
           prepend-icon="mdi-cogs"
-          text="Админка"
+          :text="t('profile.admin.title')"
           value="admin"
         />
       </v-tabs>
