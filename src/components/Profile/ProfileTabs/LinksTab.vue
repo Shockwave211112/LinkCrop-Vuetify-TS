@@ -4,7 +4,7 @@ import LinkEditForm from "@/components/Profile/LinkEditForm.vue";
 import {inject, onMounted, reactive, ref} from "vue";
 import { useGroupStore } from "@/store/groups";
 import { apiClient }  from "@/plugins/axios";
-import type { Link, NotifyFunction } from "@/types/objects";
+import type {Group, Link, NotifyFunction} from "@/types/objects";
 import {useLinkStore} from "@/store/links";
 import DeleteModal from "@/components/Profile/Modals/DeleteModal.vue";
 import { useI18n } from 'vue-i18n';
@@ -20,7 +20,7 @@ const groupStore = useGroupStore();
 const createDialog = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
 const statisticDialog = ref<boolean>(false);
-const selecetedId = ref<number>(-1);
+const selectedId = ref<number>(-1);
 const showingGroupsBeforeFocus = ref<number[]>([]);
 
 const searchFields: object[] = [
@@ -78,17 +78,21 @@ function clearTempLink() {
   tempCreationLink.origin = '';
 }
 
-async function create(validate, link: Link) {
+async function create(validate: () => Promise<boolean>, link: Link) {
   const isValid = await validate();
   if (isValid) {
-    const data = {
+    const data: {
+      name: string,
+      description: string,
+      origin: string,
+      group_id?: number[] | Group[],
+    } = {
       'name': link.name,
       'description': link.description,
       'origin': link.origin,
-      'group_id': link.groups,
     }
-    if (!link.groups.length) {
-      delete data.group_id;
+    if (link.groups && link.groups.length) {
+      data.group_id = link.groups;
     }
 
     await apiClient.post('/links', data).then((response) => {
@@ -102,7 +106,7 @@ async function create(validate, link: Link) {
   }
 }
 
-async function save(validate, link: Link) {
+async function save(validate: () => Promise<boolean>, link: Link) {
   const isValid = await validate();
   if (isValid) {
     await apiClient.patch('/links/' + link.id, {
@@ -119,7 +123,7 @@ async function save(validate, link: Link) {
 }
 
 function openDialog(id: number, type: string) {
-  selecetedId.value = id;
+  selectedId.value = id;
 
   switch(type) {
     case 'delete':
@@ -132,7 +136,7 @@ function openDialog(id: number, type: string) {
 }
 
 function deleteItem() {
-  selecetedId.value = -1;
+  selectedId.value = -1;
   deleteDialog.value = false;
   linkStore.fetchLinks(true);
 }
@@ -459,14 +463,14 @@ function deleteItem() {
     </v-dialog>
     <DeleteModal
       v-model="deleteDialog"
-      :selected-id="selecetedId"
+      :selected-id="selectedId"
       :selected-model="'links'"
-      @close-modal="deleteDialog = false; selecetedId = -1;"
+      @close-modal="deleteDialog = false; selectedId = -1;"
       @delete-item="deleteItem"
     />
     <StatisticModal
       v-model="statisticDialog"
-      :link-id="selecetedId"
+      :link-id="selectedId"
       @close-stat="statisticDialog = false"
     />
   </v-card>

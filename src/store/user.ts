@@ -7,7 +7,7 @@ import router from "@/router";
 export const useUserStore = defineStore('user', () => {
   const userData = ref<User|null>(
     localStorage.getItem('user')
-    ? JSON.parse(localStorage.getItem('user'))
+    ? JSON.parse(localStorage.getItem('user') ?? '')
     : null);
 
   function logout() {
@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', () => {
     userData.value = null;
   }
 
-  async function login() {
+  async function getInfo() {
     await apiClient.get('/user/info')
       .then(({data}) => {
         const userObject = data.entity;
@@ -24,14 +24,19 @@ export const useUserStore = defineStore('user', () => {
 
         localStorage.setItem('user', JSON.stringify(userObject));
         userData.value = userObject;
-
-        router.push('/profile');
       });
+  }
+
+  function login() {
+    getInfo().then(() => {
+      router.push('/profile');
+    });
   }
 
   return {
     userData,
     logout,
     login,
+    getInfo,
   }
 })

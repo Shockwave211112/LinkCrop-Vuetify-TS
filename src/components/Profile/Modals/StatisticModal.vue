@@ -4,10 +4,7 @@ import {apiClient} from "@/plugins/axios";
 import { Line } from 'vue-chartjs';
 import {formatDate} from "@/utils/formatters";
 import type {Statistic} from "@/types/responses";
-
 import type {NotifyFunction} from "@/types/objects";
-const notify = inject('notify') as NotifyFunction;
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -19,8 +16,10 @@ import {
   Legend,
   Filler
 } from 'chart.js'
-import {useTheme} from "vuetify";
+import {useI18n} from "vue-i18n";
 
+const notify = inject('notify') as NotifyFunction;
+const { t } = useI18n();
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -32,20 +31,23 @@ ChartJS.register(
   Filler
 )
 
-function getThemeColor(variable) {
+function getThemeColor(variable: string) {
   const rootStyle = getComputedStyle(document.documentElement);
   return rootStyle.getPropertyValue(variable).trim();
 }
 
 const isLoading = ref<boolean>(true);
-const props =  defineProps({
-  linkId: ref<number>(-1),
-});
+const props =  defineProps<{
+  linkId: number,
+}>();
 const name = ref<string>('');
 const emit = defineEmits(['close-stat'])
 const labels = ref<string[]>([]);
 const hits = ref<number[]>([]);
-const graphData = ref<object>({});
+const graphData = ref({} as unknown as {
+  labels: string[];
+  datasets: any[];
+});
 const graphOptions = ref<object>({
   responsive: true,
   scales: {
@@ -71,7 +73,10 @@ const graphOptions = ref<object>({
 function clearData() {
   labels.value = [];
   hits.value = [];
-  graphData.value = {};
+  graphData.value = {
+    labels: [],
+    datasets: [],
+  };
   isLoading.value = true;
 }
 
@@ -88,7 +93,7 @@ async function fetchLinkInfo() {
       graphData.value = {
         labels: labels.value,
         datasets: [{
-          label: 'Переходы',
+          label: t('profile.stats.dataLabel'),
           fill: true,  // Включаем заливку под графиком
           borderColor: `rgb(${getThemeColor('--v-theme-accent')})`,  // Цвет линии графика (циановый)
           backgroundColor: `rgba(${getThemeColor('--v-theme-accent')}, 0.2)`,  // Полупрозрачный циановый цвет под графиком
@@ -131,7 +136,7 @@ async function fetchLinkInfo() {
         />
       </template>
       <v-card-title class="d-flex justify-space-between align-center">
-        Статистика ссылки #{{ name }}
+        {{ t('profile.stats.header') + ' #' + name }}
         <v-btn
           icon="mdi-close"
           size="small"
@@ -156,14 +161,14 @@ async function fetchLinkInfo() {
               :options="graphOptions"
             />
             <h3 class="text-grey">
-              Всего - {{ hits.reduce((sum, item) => sum + item) }}
+              {{ t('profile.stats.total') + ' #' + hits.reduce((sum, item) => sum + item) }}
             </h3>
           </div>
 
           <div
             v-else
           >
-            Нет данных о переходах по данной ссылке!
+            {{ t('profile.stats.noData') }}
           </div>
         </div>
       </v-card-text>

@@ -11,11 +11,17 @@ import {useI18n} from "vue-i18n";
 
 const { t } = useI18n();
 const isLoading = ref<boolean>(true);
-const props =  defineProps({
-  userId: ref<number>(-1),
-});
+const props =  defineProps<{
+  userId: number,
+}>();
 const emit = defineEmits(['close-modal', 'delete-item', 'update-item']);
-const user = reactive<User>({});
+const user = reactive<User>({
+  id: -1,
+  email: '',
+  name: '',
+  created_at: new Date().toISOString(),
+  email_verified_at: '',
+});
 const emailVerified = ref<boolean>(false);
 const deleteDialog = ref<boolean>(false);
 

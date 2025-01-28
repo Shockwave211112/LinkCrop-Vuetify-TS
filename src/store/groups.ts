@@ -4,7 +4,7 @@ import { apiClient } from "@/plugins/axios";
 import type { Group } from "@/types/objects";
 
 export const useGroupStore = defineStore('groups', () => {
-  const groupList = ref<Group[]|null>(null);
+  const groupList = ref<Group[]>();
   const isLoading = ref<boolean>(true);
 
   async function fetchGroups() {

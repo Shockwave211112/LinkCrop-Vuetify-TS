@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {Link, NotifyFunction} from "@/types/objects";
+import type {Group, NotifyFunction, SortItem} from "@/types/objects";
 import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
 import {formatDate} from "@/utils/formatters";
@@ -10,7 +10,7 @@ const { t } = useI18n();
 const notify = inject('notify') as NotifyFunction;
 const isLoading = ref<boolean>(true);
 
-const groups = ref<Link[]>([]);
+const groups = ref<Group[]>([]);
 const headers: object[] = [
   { title: 'ID', value: 'id', sortable: true },
   { title: t('profile.groups.table.title'), value: 'name', sortable: true },
@@ -91,7 +91,7 @@ function edit(id: number) {
   editDialog.value = true;
 }
 
-function changeSort(sortBy: object[]) {
+function changeSort(sortBy: SortItem[]) {
   if(sortBy.length) {
     currentOrder.value = sortBy[0]['key'];
     currentSortDir.value = sortBy[0]['order'];

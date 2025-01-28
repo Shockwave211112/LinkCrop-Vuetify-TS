@@ -12,12 +12,20 @@ const { t } = useI18n();
 const notify = inject('notify') as NotifyFunction;
 const referralUrl = import.meta.env.VITE_API_URL + '/l/';
 const isLoading = ref<boolean>(true);
-const props =  defineProps({
-  linkId: ref<number>(-1),
-});
-
+const props =  defineProps<{
+  linkId: number,
+}>();
 const emit = defineEmits(['close-modal', 'delete-item', 'update-item']);
-const link = reactive<Link>({});
+const link = reactive<Link>({
+  id: -1,
+  name: '',
+  description: '',
+  origin: '',
+  referral: '',
+  updated_at: new Date().toISOString(),
+  created_at: new Date().toISOString(),
+  groups: [],
+});
 const deleteDialog = ref<boolean>(false);
 const statsDialog = ref<boolean>(false);
 
@@ -38,7 +46,7 @@ async function fetchLinkInfo() {
     })
 }
 
-async function save(validate) {
+async function save(validate: () => Promise<boolean>) {
   const isValid = await validate();
 
   if(isValid) {

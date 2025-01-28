@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {Link, NotifyFunction} from "@/types/objects";
+import type {Link, NotifyFunction, SortItem} from "@/types/objects";
 import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
 import {formatDate} from "@/utils/formatters";
@@ -93,7 +93,7 @@ function edit(id: number) {
   editDialog.value = true;
 }
 
-function changeSort(sortBy: object[]) {
+function changeSort(sortBy: SortItem[]) {
   if(sortBy.length) {
     currentOrder.value = sortBy[0]['key'];
     currentSortDir.value = sortBy[0]['order'];
@@ -164,9 +164,9 @@ function changeSort(sortBy: object[]) {
           <td>
             <v-chip
               v-for="group in item.groups"
-              :key="group.id"
+              :key="typeof group === 'object' ? group.id : group"
             >
-              {{ group.id }}
+              {{ typeof group === 'object' ? group.id : group }}
             </v-chip>
           </td>
           <td>

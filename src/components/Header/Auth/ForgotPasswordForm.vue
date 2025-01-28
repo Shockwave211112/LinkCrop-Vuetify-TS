@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {inject} from "vue";
-import {useUserStore} from "@/store/user";
 import {apiClient} from "@/plugins/axios";
 import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
@@ -11,7 +10,7 @@ import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 
 const { t } = useI18n();
-const userEmail = ref<string>(null);
+const userEmail = ref<string>('');
 
 const rules = {
   userEmail: { required, email }

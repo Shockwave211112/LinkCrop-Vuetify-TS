@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UserEditModal from "@/components/Profile/Modals/UserEditModal.vue";
-import type {NotifyFunction, User} from "@/types/objects";
+import type {NotifyFunction, SortItem, User} from "@/types/objects";
 import {inject, onMounted, ref, watch} from "vue";
 import {apiClient} from "@/plugins/axios";
 import {formatDate} from "@/utils/formatters";
@@ -89,7 +89,7 @@ function edit(id: number) {
   editDialog.value = true;
 }
 
-function changeSort(sortBy: object[]) {
+function changeSort(sortBy: SortItem[]) {
   if(sortBy.length) {
     currentOrder.value = sortBy[0]['key'];
     currentSortDir.value = sortBy[0]['order'];

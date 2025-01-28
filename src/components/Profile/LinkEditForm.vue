@@ -11,19 +11,12 @@ const notify = inject('notify') as NotifyFunction;
 const { t } = useI18n();
 const groups = useGroupStore().groupList;
 
-const props =  defineProps({
-  link: reactive<Link>({
-    id: -999,
-    name: 'Placeholder',
-    description: 'Placeholder',
-    referral: 'Placeholder',
-    origin: 'Placeholder',
-    created_at: Date(),
-    updated_at: Date(),
-    groups: [],
-  }),
-  editGroups: ref<boolean>(true),
-})
+const props =  withDefaults(defineProps<{
+  link: Link,
+  editGroups?: boolean,
+}>(), {
+  editGroups: false,
+});
 
 const rules = {
   props: {
@@ -36,7 +29,7 @@ const rules = {
 };
 const v$ = useVuelidate(rules, {props});
 
-async function validateLinkForm() {
+async function validateLinkForm(): Promise<boolean> {
   const isValid = await v$.value.$validate();
   if (!isValid) {
     notify(t('messages.checkFields'), 'warning');
@@ -67,7 +60,7 @@ async function validateLinkForm() {
         variant="outlined"
         multiple
         chips
-        :disabled="props.editGroups == false"
+        :disabled="!props.editGroups"
         :label="t('profile.links.form.groups')"
       />
       <v-date-input

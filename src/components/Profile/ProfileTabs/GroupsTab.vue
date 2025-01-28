@@ -102,7 +102,7 @@ function clearTempGroup() {
   tempCreationGroup.updated_at = Date();
 }
 
-async function create(validate, group: Group) {
+async function create(validate: () => Promise<boolean>, group: Group) {
   const isValid = await validate();
   if (isValid) {
     const data = {
@@ -123,7 +123,7 @@ async function create(validate, group: Group) {
   }
 }
 
-async function save(validate, group: Group) {
+async function save(validate: () => Promise<boolean>, group: Group) {
   const isValid = await validate();
   if (isValid) {
     await apiClient.patch('/groups/' + group.id, {

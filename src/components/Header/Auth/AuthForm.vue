@@ -11,8 +11,8 @@ import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 
 const { t } = useI18n();
-const userEmail = ref<string>(null);
-const password = ref<string>(null);
+const userEmail = ref<string>('');
+const password = ref<string>('');
 
 const user = useUserStore();
 

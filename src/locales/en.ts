@@ -204,5 +204,28 @@ export default {
         uncheck: 'Uncheck all',
       },
     },
+    settings: {
+      title: 'Settings',
+      header: 'Profile Settings',
+      welcome: 'Hello, ',
+      subtitle: 'Here you can confirm your email address or change your password.',
+      email: 'Email address',
+      verifyEmail: 'Confirm email!',
+      sendBtn: 'Send confirmation',
+      passwordChange: 'Password Change',
+      resetBtn: 'Reset Password',
+    },
+    stats: {
+      header: 'Link statistics',
+      total: 'Total',
+      noData: 'There is no data on clicks on this link!',
+      dataLabel: 'Transitions',
+    },
+    deleteModal: {
+      header: 'Deletion',
+      confirmation: 'Are you sure?',
+      yes: 'Yes',
+      no: 'No',
+    },
   }
 };

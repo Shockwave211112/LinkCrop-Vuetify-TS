@@ -2,16 +2,20 @@
 import {ref} from "vue";
 import RoleEditModal from "@/components/Profile/Modals/RoleEditModal.vue";
 import {useI18n} from "vue-i18n";
+import type {Role} from "@/types/objects";
 
 const { t } = useI18n();
-const roles: object[] = [
+const roles: Role[] = [
   { id: 1, name: t('profile.admin.roles.admin') },
   { id: 2, name: t('profile.admin.roles.user') },
 ];
-const selectedRole = ref<object>({});
+const selectedRole = ref<Role>({
+  id: -1,
+  name: '',
+});
 const editDialog = ref<boolean>(false);
 
-function edit(item: object) {
+function edit(item: Role) {
   selectedRole.value = item;
   editDialog.value = true;
 }
@@ -46,7 +50,7 @@ function edit(item: object) {
   <RoleEditModal
     v-model="editDialog"
     :role="selectedRole"
-    @close-modal="editDialog = false; selectedId = -1"
+    @close-modal="editDialog = false;"
   />
 </template>
 

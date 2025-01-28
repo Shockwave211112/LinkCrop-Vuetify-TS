@@ -2,15 +2,15 @@
 import {computed, inject, onMounted, reactive, ref} from "vue";
 import {apiClient} from "@/plugins/axios";
 
-import type {NotifyFunction, Permission, User} from "@/types/objects";
+import type {NotifyFunction, Permission, Role, User} from "@/types/objects";
 import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 
 const { t } = useI18n();
 const isLoading = ref<boolean>(true);
-const props =  defineProps({
-  role: ref<number>(-1),
-});
+const props =  defineProps<{
+  role: Role,
+}>();
 const emit = defineEmits(['close-modal']);
 const permissions = ref<Permission[]>([]);
 const activePermissions = ref<number[]>([]);

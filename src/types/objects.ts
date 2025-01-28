@@ -16,7 +16,7 @@ export interface User {
   id: number,
   email: string,
   name: string,
-  roles?: object[],
+  roles?: string[],
   created_at: string,
   email_verified_at: string,
 }
@@ -29,7 +29,7 @@ export interface Link {
   referral: string,
   updated_at: string,
   created_at: string,
-  groups?: number[]|Group[],
+  groups: number[]|Group[],
   users?: User[],
 }
 
@@ -51,4 +51,14 @@ export interface Permission {
   description: string,
   created_at: string,
   updated_at: string,
+}
+
+export interface SortItem {
+  key: string;
+  order: 'asc' | 'desc';
+}
+
+export interface Role {
+  id: number,
+  name: string,
 }

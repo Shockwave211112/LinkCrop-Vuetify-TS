@@ -11,12 +11,20 @@ import {useI18n} from "vue-i18n";
 
 const { t } = useI18n();
 const isLoading = ref<boolean>(true);
-const props =  defineProps({
-  groupId: ref<number>(-1),
-});
-
+const props =  defineProps<{
+  groupId: number,
+}>();
 const emit = defineEmits(['close-modal', 'delete-item', 'update-item']);
-const group = reactive<Group>({});
+const group = reactive<Group>({
+  id: -1,
+  name: '',
+  description: '',
+  count: 0,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  links: [],
+  users: [],
+});
 const deleteDialog = ref<boolean>(false);
 
 async function fetchLinkInfo() {
@@ -36,7 +44,7 @@ async function fetchLinkInfo() {
     })
 }
 
-async function save(validate) {
+async function save(validate: () => Promise<boolean>) {
   const isValid = await validate();
 
   if(isValid) {
@@ -91,7 +99,6 @@ async function save(validate) {
         >
           <GroupEditForm
             :group="group"
-            :edit-groups="false"
           >
             <template #buttons="{ validate }">
               <v-btn

@@ -8,11 +8,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdminTab: typeof import('./src/components/Profile/ProfileTabs/AdminTab.vue')['default']
-    AdvantageCard: typeof import('./src/components/Index/AdvantageCard.vue')['default']
     AuthForm: typeof import('./src/components/Header/Auth/AuthForm.vue')['default']
     DeleteModal: typeof import('./src/components/Profile/Modals/DeleteModal.vue')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
-    ForgotForm: typeof import('./src/components/Header/Auth/ForgotForm.vue')['default']
     ForgotPasswordForm: typeof import('./src/components/Header/Auth/ForgotPasswordForm.vue')['default']
     GroupEditForm: typeof import('./src/components/Profile/GroupEditForm.vue')['default']
     GroupEditModal: typeof import('./src/components/Profile/Modals/GroupEditModal.vue')['default']
@@ -30,9 +28,9 @@ declare module 'vue' {
     RoleEditModal: typeof import('./src/components/Profile/Modals/RoleEditModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SettingsTab: typeof import('./src/components/Profile/ProfileTabs/SettingsTab.vue')['default']
     StatisticModal: typeof import('./src/components/Profile/Modals/StatisticModal.vue')['default']
     UserEditModal: typeof import('./src/components/Profile/Modals/UserEditModal.vue')['default']
-    UserSettingsTab: typeof import('./src/components/Profile/ProfileTabs/UserSettingsTab.vue')['default']
     UsersTab: typeof import('./src/components/Profile/Admin/UsersTab.vue')['default']
   }
 }

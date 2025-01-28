@@ -55,8 +55,9 @@ async function setNewPassword() {
     notify(t('errors.incorrect'), 'error');
   }
 }
+
 onMounted(() => {
-  token.value = useRoute().query.token
+  token.value = useRoute().query.token?.toString() ?? '';
 })
 </script>
 
@@ -65,7 +66,6 @@ onMounted(() => {
     class="h-100
       w-75
       ma-auto
-      bg-secondary
       d-flex
       flex-column
       align-center
@@ -105,4 +105,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
+main {
+  background-color: rgba(var(--v-theme-secondary), 0.2) !important;
+  backdrop-filter: blur(10px) brightness(90%) !important;
+}
 </style>

@@ -174,6 +174,17 @@ export default {
         createdAt: 'Дата создания',
       }
     },
+    settings: {
+      title: 'Настройки',
+      header: 'Настройки профиля',
+      welcome: 'Привет, ',
+      subtitle: 'Здесь ты можешь подтвердить адрес электронной почты или сменить пароль.',
+      email: 'Адрес электронной почты',
+      verifyEmail: 'Подтвердите email!',
+      sendBtn: 'Отправить подтверждение',
+      passwordChange: 'Смена пароля',
+      resetBtn: 'Сбросить пароль',
+    },
     admin: {
       title: 'Админка',
       tabs: {
@@ -203,6 +214,18 @@ export default {
         checkAll: 'Выбрать все',
         uncheck: 'Снять выделение',
       },
+    },
+    stats: {
+      header: 'Статистика ссылки',
+      total: 'Всего',
+      noData: 'Нет данных о переходах по данной ссылке!',
+      dataLabel: 'Переходы',
+    },
+    deleteModal: {
+      header: 'Удаление',
+      confirmation: 'Вы уверены?',
+      yes: 'Да',
+      no: 'Нет',
     },
   }
 };

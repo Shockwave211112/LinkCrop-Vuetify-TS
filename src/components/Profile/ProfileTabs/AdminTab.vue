@@ -33,7 +33,7 @@ const { t } = useI18n();
       value="groups"
     />
     <v-tab
-      prepend-icon="mdi-group"
+      prepend-icon="mdi-security"
       :text="t('profile.admin.tabs.permissions')"
       value="permissions"
     />

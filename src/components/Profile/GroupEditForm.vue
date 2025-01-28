@@ -9,16 +9,9 @@ import {useGroupStore} from "@/store/groups";
 import {useI18n} from "vue-i18n";
 const notify = inject('notify') as NotifyFunction;
 const { t } = useI18n();
-const props =  defineProps({
-  group: reactive<Group>({
-    id: -999,
-    name: 'Placeholder',
-    description: 'Placeholder',
-    count: -999,
-    created_at: Date(),
-    updated_at: Date(),
-  }),
-})
+const props =  defineProps<{
+  group: Group,
+}>();
 
 const rules = {
   props: {
@@ -30,7 +23,7 @@ const rules = {
 };
 const v$ = useVuelidate(rules, {props});
 
-async function validateGroupForm() {
+async function validateGroupForm(): Promise<boolean> {
   const isValid = await v$.value.$validate();
   if (!isValid) {
     notify(t('messages.checkFields'), 'warning');
