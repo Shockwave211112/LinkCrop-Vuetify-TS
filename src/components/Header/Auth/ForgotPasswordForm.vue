@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {inject} from "vue";
-import {useUserStore} from "@/store/user";
 import {apiClient} from "@/plugins/axios";
 import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'

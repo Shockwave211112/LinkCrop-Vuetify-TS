@@ -204,5 +204,16 @@ export default {
         uncheck: 'Uncheck all',
       },
     },
+    settings: {
+      title: 'Settings',
+      header: 'Profile Settings',
+      welcome: 'Hello, ',
+      subtitle: 'Here you can confirm your email address or change your password.',
+      email: 'Email address',
+      verifyEmail: 'Confirm email!',
+      sendBtn: 'Send confirmation',
+      passwordChange: 'Password Change',
+      resetBtn: 'Reset Password',
+    },
   }
 };

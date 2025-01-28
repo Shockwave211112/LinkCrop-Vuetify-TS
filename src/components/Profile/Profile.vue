@@ -6,6 +6,7 @@ import AdminTab from "@/components/Profile/ProfileTabs/AdminTab.vue";
 import {useUserStore} from "@/store/user";
 import {useGroupStore} from "@/store/groups";
 import { useI18n } from 'vue-i18n';
+import SettingsTab from "@/components/Profile/ProfileTabs/SettingsTab.vue";
 
 const { t } = useI18n();
 const tab = ref<string>('links');
@@ -36,6 +37,11 @@ onMounted(() => {
           value="groups"
         />
         <v-tab
+          prepend-icon="mdi-cogs"
+          :text="t('profile.settings.title')"
+          value="settings"
+        />
+        <v-tab
           v-show="user?.roles.includes('admin')"
           prepend-icon="mdi-cogs"
           :text="t('profile.admin.title')"
@@ -63,6 +69,12 @@ onMounted(() => {
           class="tab-item"
         >
           <AdminTab />
+        </v-tabs-window-item>
+        <v-tabs-window-item
+          value="settings"
+          class="tab-item"
+        >
+          <SettingsTab />
         </v-tabs-window-item>
       </v-tabs-window>
     </div>

@@ -2,8 +2,6 @@
 import {inject, ref} from "vue";
 import { useVuelidate } from '@vuelidate/core'
 import {required, email, minLength, sameAs} from '@vuelidate/validators'
-import axios, {AxiosResponse} from 'axios';
-import type {TokenResponse} from "@/types/responses";
 import {apiClient} from "@/plugins/axios";
 import type {NotifyFunction} from "@/types/objects";
 import {useUserStore} from "@/store/user";

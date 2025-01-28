@@ -83,7 +83,7 @@ provide('notify', addNotification);
   bottom: 0;
   z-index: -1;
   height: 100vh;
-  background-image: url("src/assets/imgs/patterns.jpg");
+  background-image: url("@/assets/imgs/patterns.jpg");
   background-size: cover;
   background-repeat: repeat;
   filter: brightness(70%);

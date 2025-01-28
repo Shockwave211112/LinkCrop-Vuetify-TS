@@ -174,6 +174,17 @@ export default {
         createdAt: 'Дата создания',
       }
     },
+    settings: {
+      title: 'Настройки',
+      header: 'Настройки профиля',
+      welcome: 'Привет, ',
+      subtitle: 'Здесь ты можешь подтвердить адрес электронной почты или сменить пароль.',
+      email: 'Адрес электронной почты',
+      verifyEmail: 'Подтвердите email!',
+      sendBtn: 'Отправить подтверждение',
+      passwordChange: 'Смена пароля',
+      resetBtn: 'Сбросить пароль',
+    },
     admin: {
       title: 'Админка',
       tabs: {
