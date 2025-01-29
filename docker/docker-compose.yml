@@ -1,0 +1,18 @@
+version: '3.8'
+
+networks:
+  frontend:
+    external: true
+
+services:
+  linkcrop-front-app:
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:4173"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - frontend
