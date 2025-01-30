@@ -25,13 +25,16 @@ Frontend к API сервиса по сокращению ссылок.
 ```
 ```bash
   npm run dev
+  vite
 ```
 ---
 ```bash
   npm run build
+  vite build
 ```
 ```bash
   npm run preview
+  vite preview
 ```
 ---
 * Docker (preview):
