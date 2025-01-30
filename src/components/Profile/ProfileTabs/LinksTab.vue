@@ -362,6 +362,7 @@ function deleteItem() {
             <v-expansion-panel-text>
               <LinkEditForm
                 :link="link"
+                :edit-groups="true"
               >
                 <template #buttons="{ validate }">
                   <v-btn
@@ -428,6 +429,7 @@ function deleteItem() {
         <v-card-text>
           <LinkEditForm
             :link="tempCreationLink"
+            :edit-groups="true"
           >
             <template #buttons="{ validate }">
               <v-btn

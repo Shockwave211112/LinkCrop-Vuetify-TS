@@ -2,7 +2,7 @@
 import {useI18n} from "vue-i18n";
 
 const date = new Date().getFullYear();
-const apiLink = import.meta.env.VITE_API_URL + '/api/docs';
+const apiLink = import.meta.env.VITE_DOCS_URL;
 const { t } = useI18n();
 </script>
 
